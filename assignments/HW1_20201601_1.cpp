@@ -48,7 +48,7 @@ int main()
 
     }
 
-
+	delete [] pstring;
 
     return 0;
 }
@@ -102,6 +102,8 @@ int roman_to_arabic(string roman)
     }
     result += arabic[length - 1]; 
 
+	delete[] arabic; 
+	
     return result;
 }
 
