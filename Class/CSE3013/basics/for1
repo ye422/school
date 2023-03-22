@@ -1,0 +1,9 @@
+IFS=:
+
+
+for dir in $PATH
+do 
+	ls -ld $dir
+done
+$ echo $PATH
+/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin

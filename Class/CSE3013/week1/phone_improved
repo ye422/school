@@ -1,0 +1,50 @@
+if [ $# -eq 0 ]
+
+then 
+	echo "Usage: phone searchfor [...searchfor]"
+	echo "(You didn't tell me what you want to search for.)"
+	
+else 
+
+echo "출력 (or 형식)"
+	word_fixed=""
+	for i in $*
+	
+	do 
+		if [ -z $word_fixed ]
+		then
+			word_fixed+="($i"
+			
+		else 
+			word_fixed+="|$i"
+		fi
+	done
+	word_fixed+=")"
+		
+	egrep "$word_fixed" mydata | awk -f display.awk
+
+echo "출력 (and 형식)"
+	count=0
+	time=0
+	for i in $*
+	do
+		if [ $time -eq 0 ]
+	
+		then
+			egrep "$i" mydata > "result$count"
+			time=1
+		else 
+			count=`expr $count + 1`
+			egrep "$i" result$(($count-1)) > "result$count" || echo 'No results'
+			
+		fi
+	done
+	cat "result$count" | awk -f display.awk 
+	
+	for ((i=0 ; i < $(($count+1)) ; i++));
+	do 
+		rm "result$i"
+	done
+
+fi
+exit 0	
