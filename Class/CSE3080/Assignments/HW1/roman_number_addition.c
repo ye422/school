@@ -117,7 +117,6 @@ string arabic_to_roman(int arabic)
     {
         digit[i] = arabic % 10;
         arabic = arabic / 10;
-
         i--;
     }
 
