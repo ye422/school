@@ -1,20 +1,13 @@
-target = main
-obj1 = main.o
-obj2 = array.o
-obj3 = rangearray.o
-header1 = Array.h
-header2 = RangeArray.h
+TARGET = main
+OBJS = main.o array.o rangearray.o
+HEADERS = Array.h RangeArray.h
 
-$(target) : $(obj1) $(obj2) $(obj3)
-	g++ -o $(target) $(obj1) $(obj2) $(obj3)
+$(TARGET): $(OBJS)
+	g++ -o $(TARGET) $(OBJS)
 
-$(obj1) : $(header1) $(header2)
+$(OBJS): $(HEADERS)
 
-$(obj2) : $(header1)
+.PHONY: clean
 
-$(obj3) : $(header2)
-
-.PHONY : clean
-
-clean : 
-	rm *.o $(target)
+clean:
+	rm -f $(OBJS) $(TARGET)
