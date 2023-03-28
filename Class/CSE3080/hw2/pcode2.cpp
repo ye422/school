@@ -15,6 +15,7 @@ int main()
 	int MAX;
 	int N,M,result = 0;
 	cin >> N >> M;
+
 	for (int i = 0; i < min(N,M); i++)
 	{
 		if ( pow(2,i) > min(N,M))
@@ -23,11 +24,21 @@ int main()
 			break;
 		}
 	}
+
 	for (int i = 0; i < MAX; i++)
 		result += tile_count(N,M,MAX,i);
-		
+	//cout << result << "\n";
+	try
+	{
+          if( !N || !M )
+              throw std::out_of_range("Wrong Input.");
+    } 
+	catch (std::out_of_range& e) {
+          cout << "Error: " << e.what() << "\n";
+		  exit(0);
+    }	
 	cout << result << "\n";
-
+	
 	return 0;
 }
 
