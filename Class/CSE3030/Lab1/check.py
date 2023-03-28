@@ -12,10 +12,8 @@ TESTCASE_DIRNAME = "testcase"
 VALIDATOR_NAME = "validate"
 EXECUTABLE_NAME = "main.bin"
 
-
 def bytes_to_str(bytes):
     return "".join(map(chr, bytes))
-
 
 def run_cmd(cmd_str):
     cmd_args = cmd_str.split()
@@ -145,7 +143,6 @@ def main():
                 print("[*] Result: %s" % grading_str)
     if csv_flag:
         print("%.1f," % total_point)
-
 
 if __name__ == "__main__":
     main()
