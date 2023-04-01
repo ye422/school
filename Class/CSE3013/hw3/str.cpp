@@ -7,10 +7,10 @@ using std::cout;	// cout이 std::cout으로 사용된다는 것을 알려준다.
 Str::Str(int leng)	//Str클래스의 int leng을 매개변수로 하는 Str 객체 생성자
 {
 	len = leng;		//int leng을 Str 객체의 데이터 len에 대입한다.
-	str = new char [len];	// 문자열의 길이 len 만큼의 길이를 가진 char 배열의 포인터를 str에 동적할당한다.
+	str = new char [len];	// len 만큼의 길이를 가진 char 배열의 포인터를 str에 동적할당한다.
 }
 
-Str::Str(char *neyong)	// Str클래스의 char * neyong을 매개변수로 하는 Str객체 생성자
+Str::Str(const char *neyong)	// Str클래스의 char * neyong을 매개변수로 하는 Str객체 생성자
 {
 	len = strlen(neyong);	// string.h의 함수인 strlen을 사용해 neyong이 가리키는 문자열의 길이를 구해 이를 길이를 나타내는 데이터 len에 대입한다.
 	str = new char [len];	// 문자열의 길이 len 만큼의 길이를 가진 char 배열의 포인터를 str에 동적할당한다.	
@@ -34,11 +34,11 @@ char* Str::contents(void)	// Str 클래스의 문자열의 내용을 리턴하�
 
 int Str::compare(class Str & a) // Str 클래스의 문자열과 다른 Str 객체의 문자열을 비교하는 함수
 {
-	int comparison, result;
-	comparison = strcmp(str, a.contents());	// strcmp 의 결과를 int comparison에 대입
-	if( comparison > 0 )	// comparison이 0보다 크면
+	int comp, result;
+	comp = strcmp(str, a.contents());	// strcmp 의 결과를 int comparison에 대입
+	if( comp > 0 )	// comparison이 0보다 크면
 		result = 1;		// 리턴할 result = 1
-	else if ( comparison == 0)	// comparison이 0이면 
+	else if ( comp == 0)	// comparison이 0이면 
 		result = 0;	// 리턴할 result = 0
 	else 
 		result = -1;	// comparison이 음수면 -1 리턴
@@ -48,7 +48,7 @@ int Str::compare(class Str & a) // Str 클래스의 문자열과 다른 Str 객�
 	//strcmp 바로 리턴시 1, 0, -1 외의 다른 수들도 리턴돼 result를 따로 생성했다.
 }
 
-int Str::compare(char *a) // Str 클래스의 문자열과 다른 문자열을 비교하는 함수
+int Str::compare(const char *a) // Str 클래스의 문자열과 다른 문자열을 비교하는 함수
 {
 	int result;
 	int comp = strcmp(str,a); 	// strcmp의 결과를 int comp에 저장
@@ -64,7 +64,7 @@ int Str::compare(char *a) // Str 클래스의 문자열과 다른 문자열을 �
 	//strcmp 바로 리턴시 1, 0, -1 외의 다른 수들도 리턴돼 result를 따로 생성했다.
 } 
 
-void Str::operator=(char *a)	// Str 클래스의 = 연산자 오버로딩이다. char *a가 지시하는 문자열을 기존 Str 객체의 문자열에 대입한다. (매개변수가 char* 형일때)
+void Str::operator=(const char *a)	// Str 클래스의 = 연산자 오버로딩이다. char *a가 지시하는 문자열을 기존 Str 객체의 문자열에 대입한다. (매개변수가 char* 형일때)
 {
 	int newlen = strlen(a);	// a가 지시하는 문자열의 길이를 strlen을 이용해 구하고, 이를 newlen 변수에 대입한다.
 	if ( newlen != len)	// newlen과 Str 객체의 len이 다르면

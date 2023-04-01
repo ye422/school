@@ -6,7 +6,8 @@ int main()
 {
 	using std::cout;
 	using std::endl;
-	Str a("I'm a girl");
+	Str a(11);
+	a = "I'm a girl";
 	cout << a.contents();
 	a = "I'm a boy\n";
 	cout << a.contents();
