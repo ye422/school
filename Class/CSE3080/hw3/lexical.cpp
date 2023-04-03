@@ -150,37 +150,31 @@ int compare_word(Word * first, char * tempword)
 			compare_word[i] = ptr -> content[i];		
 		case_change( compare_word, ptr -> length);	
 
-        if( compare_word[0] != target_word[0] )
+        int j = 0;
+        int i = 0;
+        while( i < cnt && j == 0)
         {
-            if (compare_word[0] > target_word[0])
+            if( compare_word[i] != target_word[i] )
             {
-                bflag = 1;
-                result = word_cnt;
-                break;
-            }
-        }
-        else
-		{
-			same_flag = 1;
-            for ( int i =1; i < cnt ; i++)
-            {
-        		if (compare_word[i] != target_word[i])
+                same_flag = 0;
+                if (target_word[i] < compare_word[i])
                 {
-					same_flag = 0;
-                    if (compare_word[i] > target_word[i])
-                    {
-                    	bflag = 1;
-                        result = word_cnt;
-                        break;
-                    }
+                    bflag = 1;
+                    result = word_cnt;
+                    j++;
                 }
+                else
+                    j++;
             }
+            else 
+                same_flag = 1;
+            i++;
         }
-				
+
 		if ( same_flag == 1)
 		{
 			bflag = 1;
-			if ( ptr-> length > cnt )
+			if ( ptr -> length > cnt )
 				result = word_cnt;
 			else 
 				result = word_cnt + 1;
