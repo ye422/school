@@ -19,10 +19,9 @@ class Stack : public LinkedList<T>
 				else 
 				{
 					Node<T> * current = this->first;
-					this->first = current -> link;
-					element = current->data;
+					this -> first = current -> link;
 					delete current;
-					this->current_size--;
+					this -> current_size--;
 					return true;
 				}
 		}
