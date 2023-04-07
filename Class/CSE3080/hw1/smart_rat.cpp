@@ -30,11 +30,11 @@ int main()
 		
 		int ** food = new int * [ x_size[i] ];
 
-		for(int k = 0; k < y_size[i] ; k++)
+		for(int k = 0; k < x_size[i] ; k++)
 			food[k] = new int [ y_size[i] ];
 	
-		for(int k = 0; k < y_size[i]; k++)
-			for(int j = 0; j < x_size[i]; j++)
+		for(int k = 0; k < x_size[i]; k++)
+			for(int j = 0; j < y_size[i]; j++)
 				cin >> food[k][j];			
 			
 		go_down(0,0,y_size[i],x_size[i],food ,0 );
@@ -42,7 +42,7 @@ int main()
 		result[i] = MAX;
 		MAX = 0;	
 
-		for(int k = 0; k < y_size[i];k++)
+		for(int k = 0; k < x_size[i];k++)
 			delete [] food[k];
 		delete [] food;
 
@@ -61,7 +61,7 @@ int main()
 
 void go_down(int y,int x, int y_size, int x_size,int ** food,int food_cnt)
 {
-    food_cnt += food[y][x];
+    food_cnt += food[x][y];
 
 	if ( x == x_size - 1 && y == y_size - 1)
 	{
@@ -82,7 +82,7 @@ void go_down(int y,int x, int y_size, int x_size,int ** food,int food_cnt)
 
 void go_right(int y, int x, int y_size, int x_size,int ** food ,int food_cnt)
 {
-	food_cnt += food[y][x];
+	food_cnt += food[x][y];
 	if ( x == x_size - 1 && y == y_size - 1 )
 	{
 		
