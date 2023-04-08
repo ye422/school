@@ -5,7 +5,6 @@
  *   Legal ops: ! ~ & ^ | + << >>
  */
 int conditional(int x, int y, int z) {
-
 	int result;
 	int t_f = !x;
 	int mask = 0xFF << 8;
