@@ -17,7 +17,6 @@ void print_word(Word * first);
 void case_change(char * tempword, int cnt);
 int compare_word(Word * first, char * tempword);
 bool check_exit(char * tempword);
-int dup_check(char * tempword, Word * first, int cnt);
 
 int main()
 {
@@ -26,7 +25,7 @@ int main()
     int *word_cnt = new int;
     *word_cnt = 0;
     cin.getline(tempword,MAX);
-	if( cin.fail())
+	if( cin.fail() )
 	{
 		cout <<	"Error, Invaild input.\n";
 		exit(1);
@@ -39,9 +38,9 @@ int main()
             location = compare_word( first, tempword );
         insert_word( tempword, first, location, word_cnt);
         print_word(first);
-                (*word_cnt)++;
+        (*word_cnt)++;
         cin.getline(tempword, MAX);
-		if ( cin.fail() )
+		if ( cin.fail() || tempword[0] == '\0' )
 		{
 			cout << "Error, Invaild input.\n";
 			exit(1);
@@ -140,63 +139,58 @@ int compare_word(Word * first, char * tempword)
     for (int i =0; i < cnt; i++)
         target_word[i] = tempword[i];
 
-    int dupulicate = dup_check(tempword, first, cnt);
+  
     
-    if ( dupulicate )
-        result = dupulicate;
-    else
-    {   
-        case_change( target_word, cnt);
-        for (ptr = first; ptr != nullptr; ptr = ptr->link )
+    case_change( target_word, cnt);
+    for (ptr = first; ptr != nullptr; ptr = ptr->link )
+    {
+		
+        if( bflag == 1) 
+			break;
+		
+		for( int i =0; i < ptr -> length; i++)
+	    	compare_word[i] = ptr -> content[i];		
+	    case_change( compare_word, ptr -> length);	
+
+        int j = 0;
+        int i = 0;
+        while( i < cnt && j == 0)
         {
-		
-            if( bflag == 1) 
-			    break;
-		
-	    	for( int i =0; i < ptr -> length; i++)
-		    	compare_word[i] = ptr -> content[i];		
-		    case_change( compare_word, ptr -> length);	
-
-            int j = 0;
-            int i = 0;
-            while( i < cnt && j == 0)
+            if( compare_word[i] != target_word[i] )
             {
-                if( compare_word[i] != target_word[i] )
+                same_flag = 0;
+                if (target_word[i] < compare_word[i])
                 {
-                    same_flag = 0;
-                    if (target_word[i] < compare_word[i])
-                    {
-                        bflag = 1;
-                        result = word_cnt;
-                        j++;
-                    }
-                    else if ( target_word[i] > compare_word[i])
-                    {
-                        j++;
-                    }
+                    bflag = 1;
+                    result = word_cnt;
+                    j++;
                 }
-                else 
+                else if ( target_word[i] > compare_word[i])
                 {
-                    same_flag = 1;
+                    j++;
                 }
-                i++;
             }
-
-		    if ( same_flag == 1)
-		    {
-			    bflag = 1;
-			    if ( ptr-> length > cnt )
-			    	result = word_cnt;
-			    else 
-			    	result = word_cnt + 1;
-		    }
-
-            word_cnt++;
+            else 
+            {
+                same_flag = 1;
+            }
+            i++;
         }
 
-	    if ( bflag == 0)
-            result = word_cnt + 1;
+		if ( same_flag == 1)
+        {
+		    bflag = 1;
+		    if ( ptr-> length > cnt )
+		    	result = word_cnt;
+			else 			    	
+                result = word_cnt + 1;
+	    }
+        word_cnt++;
     }
+
+	if ( bflag == 0)
+        result = word_cnt + 1;
+    
     delete [] compare_word;
 	delete [] target_word;
     return result;
@@ -212,7 +206,6 @@ void case_change(char * tempword, int cnt)
     return;
 }
 
-
 void print_word(Word * first)
 {
 		int first_flag = 0;
@@ -225,7 +218,7 @@ void print_word(Word * first)
             for( int i =0; i < ptr->length ; i++)
                 cout << ptr->content[i];
 			first_flag = 1;
-        }
+        }    
         cout << "\n";
         return;
 }
@@ -245,24 +238,3 @@ bool check_exit( char * tempword)
         return result;
 }
 
-int dup_check(char * tempword, Word * first, int cnt)
-{
-    int result  = 0;
-    int word_cnt = 0;
-    Word * src = first;
-    int dup_flag;
-    for (src = first; src != nullptr; src = src -> link)
-    {
-        dup_flag = 1;
-        for(int i =0; i < cnt ; i++)
-        {    
-            if ( src->content[i] != tempword[i] )
-                dup_flag = 0;
-        }
-        word_cnt++;
-    }
-    if (dup_flag == 1)
-        result = word_cnt;  
-
-    return result;
-}
