@@ -12,7 +12,7 @@ struct Word
     int length;
 };
 
-void insert_word(char * tempword, Word *& first, int location, int * word_count);
+void insert_word(char * tempword, Word *&first, int location, int * word_count);
 void print_word(Word * first);
 void case_change(char * tempword, int cnt);
 int compare_word(Word * first, char * tempword);
@@ -62,7 +62,7 @@ int main()
     return 0;
 }
 
-void insert_word(char *tempword, Word *&first, int location, int * word_count)
+void insert_word(char *tempword, Word *&first, int location, int * word_count) // first 포인터의 값 보존을 위해 *& 사용. *&사용안할시 다른 Word * 선언 후 first 대입해서 first 대신 사용한다.
 {
     int cnt;
     Word *newword = new Word;
@@ -102,10 +102,9 @@ void insert_word(char *tempword, Word *&first, int location, int * word_count)
 
     else
     {
-    for (int i = 0; i < location - 1 ; i++)
-    {
-        temp_add = temp_add ->link;
-    }
+    	for (int i = 0; i < location - 1 ; i++)
+        	temp_add = temp_add ->link;
+
     	newword->link = temp_add->link;
         temp_add->link = newword;
     }
