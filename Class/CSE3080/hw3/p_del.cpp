@@ -91,19 +91,20 @@ char* pmatch(char * string, char *pat, int * failure)
 		}
 		else 
 		{
-			j = failure[j-1] + 1;
+			while( j > 0 && string[i] != pat[j] )
+				j = failure[j-1] + 1;
 			cont_flag = 0;
 		}
 	
- 		if ( matched  == lenp )
+ 		if ( matched == lenp )
 		{
 			for(int k = i - matched; k < i; k++)
 				string[k] = ' ';
 			j = 0;
 			matched = 0;
+		
 		}
-	
-		else if ( cont_flag == 0 && matched > 1)
+		else if( cont_flag == 0 && matched > 1)
 		{	
 			for(int k = i - matched; k < i; k++)
 				string[k]= ' ';
