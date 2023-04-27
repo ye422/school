@@ -3,7 +3,10 @@
 using std::cout;
 using std::cin;
 
-typedef enum {lparen, rparen, plus, minus, times, divide, mod, eos, operand, negative } precedence; 
+typedef enum 
+{
+	lparen, rparen, plus, minus, times, divide, mod, eos, operand, negative 
+} precedence; 
 
 char printToken(precedence token);
 precedence getToken(char *symbol, char * expr ,int * n, int & op_check);
@@ -23,6 +26,11 @@ int main()
 	int stack_2[MAX_LEN];
     char expression[MAX_LEN];
     cin.getline(expression, MAX_LEN);
+	if(cin.fail())
+	{
+		cout << "Invaild Input.\n";
+		exit(1);
+	}
 	char *postfix_expr = new char[strlen(expression)];
     postfix(stack, expression, top, postfix_expr);
 
@@ -34,7 +42,6 @@ int main()
 	delete [] postfix_expr;
     return 0;
 }
-
 
 precedence getToken(char *symbol, char * expr ,int *n, int & op_check)
 {
