@@ -16,7 +16,7 @@ struct element{
     int dir;
 };
 
-void path(int **, int **, int &, int & );
+void path(int **, int **, int &, int &);
 void set(int ** , int **, int &, int &);
 void push(element & item);
 element pop();
@@ -40,15 +40,7 @@ int main()
         mark[i] = new int[m+2];
     }
 
-    for(int i = 0; i <= n + 1; i++)
-        for(int j = 0; j <= m + 1; j++)
-        {
-            if(i == 0 || i == n + 1)
-                maze[i][j] = 1;
-            if ( j == 0 || j == m + 1)
-                maze[i][j] = 1;
-        }    
-
+    
     for(int i = 1; i <= n; i++)
         for(int j = 1; j <= m; j++)
             cin >> maze[i][j];
@@ -67,6 +59,15 @@ int main()
 
 void set(int **maze, int** mark, int & row, int & col)
 {
+    for(int i = 0; i <= row + 1; i++)
+        for(int j = 0; j <= col + 1; j++)
+        {
+            if(i == 0 || i == row + 1)
+                maze[i][j] = 1;
+            if ( j == 0 || j == col + 1)
+                maze[i][j] = 1;
+        }    
+
     for(int i =0; i <= row + 1; i++)
         for(int j = 0; j <= col + 1; j++)
             mark[i][j] = 0;
@@ -80,15 +81,15 @@ void path(int **maze, int **mark, int & EXIT_ROW, int & EXIT_COL )
 	element position;
 	mark[1][1] = 1;  top = 0;
 	stack[0].row = 1; stack[0].col = 1; stack[0].dir = 1; 
-	while  (top > -1 && !found)  
+	while (top > -1 && !found)  
     {
 		position = pop();
 		row = position.row;  col = position.col, dir = position.dir;  
-		while  (dir < 8 && !found)  
+		while (dir < 8 && !found)  
         {
 			nextRow = row + move[dir].vert;
 			nextCol = col + move[dir].horiz;
-			if  (nextRow == EXIT_ROW && nextCol == EXIT_COL)
+			if (nextRow == EXIT_ROW && nextCol == EXIT_COL)
 				found = true;
 			else if  (!maze[nextRow][nextCol] && !mark [nextRow][nextCol])  	
             {
@@ -103,7 +104,8 @@ void path(int **maze, int **mark, int & EXIT_ROW, int & EXIT_COL )
 			else  ++dir;
         }
 	}
-	if (found)  {
+	if (found)  
+    {
 		cout << "The path is\n";
 		cout << "Row Col\n";
 		for  (i = 0; i <= top; i++)
