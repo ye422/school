@@ -8,7 +8,7 @@ typedef enum
 	lparen, rparen, plus, minus, times, divide, mod, eos, operand, negative 
 } precedence; 
 
-char printToken(precedence token);
+char TokenToChar(const precedence &token);
 precedence getToken(char *symbol, char * expr ,int * n, int & op_check);
 precedence pop(precedence *stack, int &top);
 int pop(int * stack_2, int & top);
@@ -30,6 +30,11 @@ int main()
 	{
 		cout << "Invaild Input.\n";
 		exit(1);
+	}
+	if(strlen(expression) == 0)
+	{
+		cout << "No Input.\n";
+		exit(2);
 	}
 	char *postfix_expr = new char[strlen(expression)];
     postfix(stack, expression, top, postfix_expr);
@@ -68,8 +73,8 @@ void postfix(precedence *stack, char * expr, int &top, char * post_expr)
 	int count = 0, n = 0;
 	precedence token;
 	int op_check = 0;
-    int isp[] = {0, 19, 12, 12, 13, 13, 13, 0, 15};
-	int icp[] = {20, 19, 12, 12, 13, 13, 13, 0, 15};
+    int isp[9] = {0, 19, 12, 12, 13, 13, 13, 0, 15};
+	int icp[9] = {20, 19, 12, 12, 13, 13, 13, 0, 15};
 
 	stack[0] = eos;
 	for  (token = getToken(&symbol, expr ,&n, op_check); token != eos; token = getToken(&symbol, expr, &n, op_check))  
@@ -82,20 +87,20 @@ void postfix(precedence *stack, char * expr, int &top, char * post_expr)
 		else if (token == rparen)  
         {
 			while (stack[top] != lparen)
-				post_expr[count++] = printToken(pop(stack,top));
+				post_expr[count++] = TokenToChar(pop(stack,top));
 			pop(stack, top); 
 			op_check = 1;
 		}
         else 
         {
 		   	while (isp[stack[top]] >= icp[token])
-			 	post_expr[count++] = printToken(pop(stack, top));
+			 	post_expr[count++] = TokenToChar(pop(stack, top));
 			push(stack, token, top);
 			op_check = 0;
 		}
 	}
 	while ( (token = pop(stack, top)) != eos)
-		post_expr[count++] = printToken(token);
+		post_expr[count++] = TokenToChar(token);
     return;
   }
 
@@ -121,7 +126,7 @@ precedence pop(precedence * stack, int & top )
     return result;
 }
 
-char printToken(precedence token)
+char TokenToChar(const precedence &token)
 {
     char result;
     switch (token)   

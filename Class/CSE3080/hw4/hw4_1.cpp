@@ -2,8 +2,8 @@
 
 using std::cout;
 using std::cin;
-const int STACK_SIZE = 100;
-const int MAZE_MAX = 100;
+const int STACK_SIZE = 900;
+const int MAZE_MAX = 30;
 
 struct offsets {
     int vert;
@@ -29,11 +29,18 @@ int main()
 {
     int n,m;    
     cin >> n >> m;
-    if(n <= 0 || m <= 0 )
+    if(n <= 1 || m <= 1 )
     {
         cout << "Invaild input\n";
-        exit(1);
+        exit(1); 
     }
+
+    if(n > MAZE_MAX || m > MAZE_MAX )
+    {
+        cout << "Invaild input\n";
+        exit(1);      
+    }
+
     int EXIT_ROW = n;
     int EXIT_COL = m;
     int ** maze = new int* [n+2];
