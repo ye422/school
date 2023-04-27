@@ -27,9 +27,13 @@ int top;
 
 int main()
 {
-    int n,m;
-    
+    int n,m;    
     cin >> n >> m;
+    if(n <= 0 || m <= 0 )
+    {
+        cout << "Invaild input\n";
+        exit(1);
+    }
     int EXIT_ROW = n;
     int EXIT_COL = m;
     int ** maze = new int* [n+2];
@@ -40,11 +44,22 @@ int main()
         mark[i] = new int[m+2];
     }
 
-    
     for(int i = 1; i <= n; i++)
         for(int j = 1; j <= m; j++)
+        {    
             cin >> maze[i][j];
-        
+            if( maze[i][j] < 0)
+            {
+                cout << "Invaild input\n";
+                exit(1);
+            }
+        }
+
+    if(cin.fail())
+    {
+        cout << "Invaild input\n";
+        exit(2);
+    }
     set(maze,mark, n,m);
     path(maze, mark, EXIT_ROW, EXIT_COL);
     for(int i =0; i < n; i++)
@@ -122,7 +137,6 @@ void push(element& item)
     stack[top].dir = item.dir;
     stack[top].row = item.row;
     stack[top].col = item.col;
-
     return;
 }
 
