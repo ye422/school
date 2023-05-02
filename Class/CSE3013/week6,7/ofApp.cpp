@@ -121,7 +121,7 @@ void ofApp::keyReleased(int key) {
             load_flag = 1;
         }
     }
-    if (key == OF_KEY_RIGHT) {
+    if (key == OF_KEY_RIGHT && !waterfall_start_flag ) {
         waterfall_start_flag = 0;
         selection_dot++;
         if (selection_dot == num_of_dot)
@@ -133,7 +133,7 @@ void ofApp::keyReleased(int key) {
         cout << "Selcted Dot Coordinate is (" << target_dot.x << ", " << target_dot.y << ")" << endl;
         resetWater();
     }
-    if (key == OF_KEY_LEFT) {
+    if (key == OF_KEY_LEFT && !waterfall_start_flag ) {
         waterfall_start_flag = 0;
         selection_dot--;
         if (selection_dot < 0)
@@ -261,8 +261,8 @@ void ofApp::processOpenFileSelection(ofFileDialogResult openFileResult) {
     wl.assign(num, WaterLine(num_of_line));
     dot_diameter = 20.0f;
     for (unsigned int i = 0; i < wl.size(); i++) {
-        //wl[i].start_dot.x = ofRandom(dot[selection_dot].x1-dot_diameter/2, dot[selection_dot].x1+dot_diameter/2);
-        wl[i].start_dot.x = dot[selection_dot].x1;
+        wl[i].start_dot.x = ofRandom(dot[selection_dot].x1-dot_diameter/2, dot[selection_dot].x1+dot_diameter/2);
+        //wl[i].start_dot.x = dot[selection_dot].x1;
         wl[i].start_dot.y = dot[selection_dot].y1;
         wl[i].dot_radius = dot_diameter / 2;
     }
@@ -271,8 +271,8 @@ void ofApp::processOpenFileSelection(ofFileDialogResult openFileResult) {
 //--------------------------------------------------------------
 void ofApp::resetWater() {
     for (unsigned int i = 0; i < wl.size(); i++) {
-        //wl[i].start_dot.x = ofRandom(dot[selection_dot].x1-dot_diameter/2, dot[selection_dot].x1+dot_diameter/2);
-        wl[i].start_dot.x = target_dot.x;
+        wl[i].start_dot.x = ofRandom(dot[selection_dot].x1-dot_diameter/2, dot[selection_dot].x1+dot_diameter/2);
+        //wl[i].start_dot.x = target_dot.x;
         wl[i].start_dot.y = target_dot.y;
         wl[i].reset();
     }
