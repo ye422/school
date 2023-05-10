@@ -196,8 +196,7 @@ void DrawBlockWithFeatures(int y, int x, int blockID, int blockRotate, char tile
 		shadow_tile = '.';
 	DrawShadow(y, x, blockID, blockRotate, shadow_tile);
 	DrawBlock(y, x, blockID, blockRotate, tile);
-	
-	
+
 }
 
 void DrawBox(int y,int x, int height, int width){
@@ -312,7 +311,7 @@ void DrawChange(char f[HEIGHT][WIDTH],int command,int currentBlock,int blockRota
 	int prev_Y = blockY;
 	int prev_X = blockX;
 	int prev_rotate = blockRotate;
-	char tile;
+	
 	//1. 이전 블록 정보를 찾는다. ProcessCommand의 switch문을 참조할 것
 	//2. 이전 블록 정보를 지운다. DrawBlock함수 참조할 것.
 	//3. 새로운 블록 정보를 그린다. 
@@ -336,10 +335,10 @@ void DrawChange(char f[HEIGHT][WIDTH],int command,int currentBlock,int blockRota
 	default :
 		break;
 	}
-	tile = '.';
-	DrawBlockWithFeatures(prev_Y, prev_X, nextBlock[0], prev_rotate, tile);
-	tile = ' ';
-	DrawBlockWithFeatures(blockY, blockX, nextBlock[0], blockRotate, tile);
+	
+	DrawBlockWithFeatures(prev_Y, prev_X, nextBlock[0], prev_rotate, '.');
+	
+	DrawBlockWithFeatures(blockY, blockX, nextBlock[0], blockRotate, ' ');
 	move(HEIGHT + 3, WIDTH + 3);
 }
 
@@ -382,7 +381,6 @@ int AddBlockToField(char f[HEIGHT][WIDTH],int currentBlock,int blockRotate, int 
 	// 블록과 맞닿는 필드가 1이면 touched 늘린다.
 	int i,j,k;
 	int touched =0;
-	int last_i = 0;
 	for(i = 0; i < 4; i++)
 	{
 		for(j = 0; j < 4; j++)
@@ -446,7 +444,6 @@ void DrawShadow(int y, int x, int blockID, int blockRotate, char tile)
 	int draw_flag = 0; 
 	int i,j;
 
-	
 	// y에서 height 까지 인덱스를 증가시키면서 checktomove를 한다.
 	while( !drop_flag )
 	{
@@ -460,11 +457,8 @@ void DrawShadow(int y, int x, int blockID, int blockRotate, char tile)
 	//그래서 checktomove가 0이면 그 위치 1칸 아래에서 /로 블록을 그린다.
 	//그림자가 지금 블록이랑 겹치면 안그린다. 
 	
-	if ( y == shadow_y )
-		draw_flag = 0;
-	if (draw_flag)
+	if ( y < shadow_y )
 		DrawBlock(shadow_y, x, blockID, blockRotate, tile);
-
 }
 
 void createRankList(){
