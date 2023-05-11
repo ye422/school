@@ -23,6 +23,7 @@
 
 // menu number
 #define MENU_PLAY '1'
+#define MENU_RANK '2'
 #define MENU_EXIT '4'
 
 // 사용자 이름의 길이
@@ -146,6 +147,16 @@ int gameOver=0;			/* 게임이 종료되면 1로 setting된다.*/
 int timed_out;
 int recommendR,recommendY,recommendX; // 추천 블럭 배치 정보. 차례대로 회전, Y 좌표, X 좌표
 RecNode *recRoot;
+int score_number = 0;
+typedef struct _RankNode {
+	
+	struct _RankNode* link;
+	int rank_score;
+	char rank_name[NAMELEN+1];
+
+} RankNode;
+RankNode * Head = NULL;
+
 
 /***********************************************************
  *	테트리스의 모든  global 변수를 초기화 해준다.
@@ -319,6 +330,10 @@ char menu();
  *	input	: none
  *	return	: none
  ***********************************************************/
+
+void CreateNode(int temp_score, char temp_char[NAMELEN]);
+void DeleteNode(int rank);
+void PrintNode(int rank, int mod, FILE * output );
 void createRankList();
 
 /***********************************************************
@@ -332,7 +347,7 @@ void rank();
  *	rank file을 생성한다.
  *	input	: none
  *	return	: none
- ***********************************************************/
+ */
 void writeRankFile();
 
 /***********************************************************
@@ -347,7 +362,7 @@ void newRank(int score);
  *	input	: (RecNode*) 추천 트리의 루트
  *	return	: (int) 추천 블럭 배치를 따를 때 얻어지는 예상 스코어
  ***********************************************************/
-int recommend(RecNode *root);
+int recommend(char fieldOri[HEIGHT][WIDTH], int lv);
 
 /***********************************************************
  *	추천 기능에 따라 블럭을 배치하여 진행하는 게임을 시작한다.
