@@ -309,16 +309,12 @@ void DrawChange(char f[HEIGHT][WIDTH],int command,int currentBlock,int blockRota
 		prev_rotate = (blockRotate + 3)%4;
 		break;
 	case KEY_DOWN:
-		
-
 		prev_Y = blockY - 1;
 		break;
 	case KEY_RIGHT:
-		
 		prev_X = blockX - 1;
 		break;
 	case KEY_LEFT:
-		
 		prev_X = blockX + 1;
 		break;
 	default :
@@ -409,7 +405,6 @@ int DeleteLine(char f[HEIGHT][WIDTH]){
 					
 			for( m =0; m< WIDTH;m++)
 				f[0][l] = 0;
-
 		} 	
 	}
 	return deleted_line * deleted_line * 100;
@@ -462,14 +457,13 @@ void createRankList(){
 	// EOF(End Of File): 실제로 이 값은 -1을 나타냄, EOF가 나타날때까지 입력받아오는 if문
 	if (fscanf(fp, "%d", &tempval ) != EOF) {
 		
-		if (score_number > 0)
+		if (tempval > 0)
 			score_number = tempval;
 		for(i=0; i < score_number; i++)
 		{
 			fscanf(fp, "%s", temp_char);
 			fscanf(fp, "%d", &temp_score);
 			CreateNode(temp_score, temp_char);
-			
 		}
 	}
 	else 
@@ -531,7 +525,7 @@ void DeleteNode(int rank)
 	int i;
 	int error_flag = 0;
 	score_number--;
-
+	modified = 1;
 	if (rank == 1)
 	{
 		Head = current_node->link;
@@ -565,16 +559,16 @@ void PrintNode(int rank, int mod, FILE* output)
 	{
 		if(rank == 1)
 		{	
-			addstr(current_node->rank_name);
-			printw("\t\t| ");
+			printw("%-18s",current_node->rank_name);
+			printw("| ");
 			printw("%d\n", current_node->rank_score);
 		}
 		else
 		{
 			for(i=0; i< rank - 1; i++)
 				current_node = current_node -> link;
-			addstr(current_node->rank_name);
-			printw("\t\t| ");
+			printw("%-18s",current_node->rank_name);
+			printw("| ");
 			printw("%d\n", current_node->rank_score);
 		}
 	}
@@ -624,13 +618,20 @@ void rank(){
 		scanw("%d",&Y);
 		noecho();
 
-		if ( X > score_number || Y > score_number)
+		if ( X <= 0 || Y <= 0) {
 			printw("Search failure : no rank\n");
+			return;
+		}
 
-		else if ( X <= Y )
+		else if ( X > score_number || Y > score_number) {
+			printw("Search failure : no rank\n");
+			return;
+		}
+
+		if ( X <= Y )
 		{
-			printw("\tname\t|\tscore\n");
-			printw("---------------------------\n");
+			printw("%11s%8c%8s\n","name",'|',"score");
+			printw("------------------------------\n");
 			for(i = X; i < Y + 1;i++)
 				PrintNode(i,1,NULL);
 		}
@@ -648,15 +649,15 @@ void rank(){
 		printw("Input the name: ");
 		getstr(str);
 		noecho();
-		printw("\tname\t|\tscore\n");
-		printw("-----------------------\n");
+		printw("%11s%8c%8s\n","name",'|',"score");
+		printw("------------------------------\n");
 		while( finder != NULL )
 		{
 			if ( !strcmp(finder->rank_name, str) )
 			{
 				check = 1;
-				printw("%s", finder->rank_name );
-				printw("\t\t| ");
+				printw("%-18s", finder->rank_name );
+				printw("%c ",'|');
 				printw("%d\n", finder->rank_score);
 			}
 			finder = finder -> link;
@@ -679,10 +680,7 @@ void rank(){
 			DeleteNode(num);
 			printw("result: the rank deleted\n");
 		}
-		else
-		{
-			printw("search failure: the rank not in the list\n");
-		}
+		else printw("search failure: the rank not in the list\n");
 	}
 	getch();
 
@@ -692,32 +690,35 @@ void writeRankFile(){
 	// 목적: 추가된 랭킹 정보가 있으면 새로운 정보를 "rank.txt"에 쓰고 없으면 종료
 	int sn, i;
 	//1. "rank.txt" 연다
-	FILE *fp = fopen("rank.txt", "w");
+	if (modified)
+	{	
 
-	//2. 랭킹 정보들의 수를 "rank.txt"에 기록s
-	if ( fp == NULL )
-	{
-		printw("Error!\n");
-		exit(1);
-	}
+		FILE *fp = fopen("rank.txt", "w");
+
+		//2. 랭킹 정보들의 수를 "rank.txt"에 기록s
+		if ( fp == NULL )
+		{
+			printw("Error!\n");
+			exit(1);
+		}
 	
-	else 
-	{
-		fprintf(fp, "%d\n", score_number);
-		for(i=1; i< score_number + 1; i++)
-			PrintNode(i,0,fp);
-		fclose(fp);
+		else 
+		{
+			fprintf(fp, "%d\n", score_number);
+			for(i=1; i< score_number + 1; i++)
+				PrintNode(i,0,fp);
+			fclose(fp);
+		}
 		
-		for ( i= 1; i < score_number+1 ; i++) {
-			DeleteNode(1);
-		}		
 	}
+	for ( i= 1; i < score_number+1 ; i++) DeleteNode(1);
 }
 
 void newRank(int score){
 	// 목적: GameOver시 호출되어 사용자 이름을 입력받고 score와 함께 리스트의 적절한 위치에 저장
 	char str[NAMELEN+1];
 	int i, j;
+	modified = 1;
 	clear();
 	//1. 사용자 이름을 입력받음
 	echo();
@@ -725,9 +726,11 @@ void newRank(int score){
 	getstr(str);
 	noecho();
 	//2. 새로운 노드를 생성해 이름과 점수를 저장, score_number가
-	CreateNode(score, str);
-	score_number++;
-
+	if (strlen(str) != 0)
+	{	
+		CreateNode(score, str);
+		score_number++;
+	}
 }
 
 void DrawRecommend(int y, int x, int blockID,int blockRotate){

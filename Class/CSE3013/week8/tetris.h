@@ -148,6 +148,7 @@ int timed_out;
 int recommendR,recommendY,recommendX; // 추천 블럭 배치 정보. 차례대로 회전, Y 좌표, X 좌표
 RecNode *recRoot;
 int score_number = 0;
+int modified = 0;
 typedef struct _RankNode {
 	
 	struct _RankNode* link;
