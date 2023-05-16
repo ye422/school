@@ -60,8 +60,8 @@ void DrawOutline(){
 	printw("NEXT BLOCK");
 	DrawBox(3,WIDTH+10,4,8);
 
-	move(9,WIDTH+10);
-	DrawBox(10,WIDTH+10,4,8);
+	//move(9,WIDTH+10);
+	DrawBox(9,WIDTH+10,4,8);
 
 	/* score를 보여주는 공간의 태두리를 그린다.*/
 	move(16,WIDTH+10);
@@ -160,7 +160,7 @@ void DrawNextBlock(int *nextBlock){
 		}
 	}
 	for( i = 0; i < 4; i++ ){
-		move(11+i,WIDTH+13);
+		move(10+i,WIDTH+13);
 		for( j = 0; j < 4; j++ ){
 			if( block[nextBlock[2]][0][i][j] == 1 ){
 				attron(A_REVERSE);
