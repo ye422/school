@@ -1,5 +1,4 @@
 #include "Header.h"
-
 void Print_Line( char *line, int *Count, int *B_Flag ) {
 	int i, N_Blanks, N_Chars, Start=0;
 
@@ -10,11 +9,10 @@ void Print_Line( char *line, int *Count, int *B_Flag ) {
 			/* In this part, N_Blanks == 0 in order that L1 and L2 should be merged.
 			* "N_Blanks != 0" means that L2 is written at the next line.
 			*/
-			if ( N_Blanks != 0 ) {
+			if ( N_Blanks != 0 ) {  // N_Blanks 있으면 합쳐지면 안된다!
 				printf("Something Wrong!\n");
 				exit(-1);
 			}
-
 			putchar(' ');
 			*B_Flag = 0;
 			for ( i = Start; i < Start + N_Chars; i++ ) {

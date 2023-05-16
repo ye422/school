@@ -5,7 +5,7 @@ target = main
 $(target) : $(object) 
 	$(cc) -o $(target) $(object)
 
-%.o : $.c 
+.c.o :
 	$(cc) -c -o $@ $<
 
 .PHONY : clean

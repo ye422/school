@@ -1,0 +1,100 @@
+constant STACK_SIZE = 900;
+constant MAZE_MAX = 30;
+
+struct offsets {
+    int vert
+    int horiz
+}
+
+struct element{
+    int row
+    int col
+    int dir
+}
+
+element stack[STACK_SIZE]
+offsets move[8] = { {-1,0}, {-1,1}, {0,1}, {1,1}, {1,0}, {1,-1}, {0,-1}, {-1,-1} }
+
+main()
+{
+    get n, m as input
+    EXIT_ROW = n
+    EXIT_COL = m
+    maze[n][m]
+    mark[n][m]
+
+    get maze[n][m] as input
+        
+    set(maze, mark, n,m)
+    path(maze, mark, n, m)
+
+    return 0
+}
+
+set(maze, mark, row, col)
+{
+    //set boundary of maze and mark array
+    for i from 0 to row + 1
+        for j from 0 to col + 1 
+        {
+            if(i == 0 || i == row + 1)
+                maze[i][j] = 1
+            if ( j == 0 || j == col + 1)
+                maze[i][j] = 1
+        }    
+
+    for i from 0 to row + 1
+        for j from 0 to col + 1 
+            mark[i][j] = 0
+}
+
+path(maze, mark, EXIT_ROW, EXIT_COL )
+{
+    bool found = false
+	element position
+	mark[1][1] = 1  int top = 0
+	stack[0].row = 1 stack[0].col = 1 stack[0].dir = 1
+	while (top > -1 and !found)  {
+		position = pop()
+		row = position.row  col = position.col, dir = position.dir; 
+		while (dir < 8 and !found)  
+        {
+			nextRow = row + move[dir].vert
+			nextCol = col + move[dir].horiz
+			if (nextRow == EXIT_ROW && nextCol == EXIT_COL)
+				found = true
+			else if  (!maze[nextRow][nextCol] and !mark [nextRow][nextCol])  	
+            {
+			  mark [nextRow][nextCol] = 1
+			  position.row = row;  position.col = col
+			  position.dir = ++dir
+			  push(position)
+			  row = nextRow
+              col = nextCol
+              dir = 0
+			}
+			else  ++dir
+        }
+	}
+	if (found)  
+        print result 
+	else  print "경로를 찾을 수 없습니다."
+}
+
+push(element item)
+{
+    top++
+    stack[top].dir = item.dir
+    stack[top].row = item.row
+    stack[top].col = item.col
+}
+
+element pop()
+{
+    element result
+    result.dir = stack[top].dir
+    result.col = stack[top].col
+    result.row = stack[top].row
+    top--
+    return result
+}

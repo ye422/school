@@ -1,5 +1,5 @@
 main.bin: copyLSB.o main.o
-	gcc copyLSB.o main.o -o main.bin
+	gcc -g copyLSB.o main.o -o main.bin
 
 copyLSB.o: copyLSB.h copyLSB.c
 	gcc -c copyLSB.c

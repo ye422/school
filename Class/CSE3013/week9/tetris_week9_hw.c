@@ -60,8 +60,8 @@ void DrawOutline(){
 	printw("NEXT BLOCK");
 	DrawBox(3,WIDTH+10,4,8);
 
-	//move(9,WIDTH+10);
-	DrawBox(9,WIDTH+10,4,8);
+	move(9,WIDTH+10);
+	DrawBox(10,WIDTH+10,4,8);
 
 	/* score를 보여주는 공간의 태두리를 그린다.*/
 	move(16,WIDTH+10);
@@ -160,7 +160,7 @@ void DrawNextBlock(int *nextBlock){
 		}
 	}
 	for( i = 0; i < 4; i++ ){
-		move(10+i,WIDTH+13);
+		move(11+i,WIDTH+13);
 		for( j = 0; j < 4; j++ ){
 			if( block[nextBlock[2]][0][i][j] == 1 ){
 				attron(A_REVERSE);
@@ -309,12 +309,16 @@ void DrawChange(char f[HEIGHT][WIDTH],int command,int currentBlock,int blockRota
 		prev_rotate = (blockRotate + 3)%4;
 		break;
 	case KEY_DOWN:
+		
+
 		prev_Y = blockY - 1;
 		break;
 	case KEY_RIGHT:
+		
 		prev_X = blockX - 1;
 		break;
 	case KEY_LEFT:
+		
 		prev_X = blockX + 1;
 		break;
 	default :
@@ -405,6 +409,7 @@ int DeleteLine(char f[HEIGHT][WIDTH]){
 					
 			for( m =0; m< WIDTH;m++)
 				f[0][l] = 0;
+
 		} 	
 	}
 	return deleted_line * deleted_line * 100;
@@ -447,8 +452,7 @@ void createRankList(){
 	char temp_char[NAMELEN+1];
 	//1. 파일 열기
 	fp = fopen("rank.txt", "r");
-	if(fp == NULL )
-		fp = fopen("rank.txt", "w");
+
 	// 2. 정보읽어오기
 	/* int fscanf(FILE* stream, const char* format, ...);
 	stream:데이터를 읽어올 스트림의 FILE 객체를 가리키는 파일포인터
@@ -458,13 +462,14 @@ void createRankList(){
 	// EOF(End Of File): 실제로 이 값은 -1을 나타냄, EOF가 나타날때까지 입력받아오는 if문
 	if (fscanf(fp, "%d", &tempval ) != EOF) {
 		
-		if (tempval > 0)
+		if (score_number > 0)
 			score_number = tempval;
 		for(i=0; i < score_number; i++)
 		{
 			fscanf(fp, "%s", temp_char);
 			fscanf(fp, "%d", &temp_score);
 			CreateNode(temp_score, temp_char);
+			
 		}
 	}
 	else 
@@ -560,16 +565,16 @@ void PrintNode(int rank, int mod, FILE* output)
 	{
 		if(rank == 1)
 		{	
-			printw("%-18s",current_node->rank_name);
-			printw("| ");
+			addstr(current_node->rank_name);
+			printw("\t\t| ");
 			printw("%d\n", current_node->rank_score);
 		}
 		else
 		{
 			for(i=0; i< rank - 1; i++)
 				current_node = current_node -> link;
-			printw("%-18s",current_node->rank_name);
-			printw("| ");
+			addstr(current_node->rank_name);
+			printw("\t\t| ");
 			printw("%d\n", current_node->rank_score);
 		}
 	}
@@ -619,20 +624,13 @@ void rank(){
 		scanw("%d",&Y);
 		noecho();
 
-		if ( X <= 0 || Y <= 0) {
+		if ( X > score_number || Y > score_number)
 			printw("Search failure : no rank\n");
-			return;
-		}
 
-		else if ( X > score_number || Y > score_number) {
-			printw("Search failure : no rank\n");
-			return;
-		}
-
-		if ( X <= Y )
+		else if ( X <= Y )
 		{
-			printw("%11s%8c%8s\n","name",'|',"score");
-			printw("------------------------------\n");
+			printw("\tname\t|\tscore\n");
+			printw("---------------------------\n");
 			for(i = X; i < Y + 1;i++)
 				PrintNode(i,1,NULL);
 		}
@@ -650,15 +648,15 @@ void rank(){
 		printw("Input the name: ");
 		getstr(str);
 		noecho();
-		printw("%11s%8c%8s\n","name",'|',"score");
-		printw("------------------------------\n");
+		printw("\tname\t|\tscore\n");
+		printw("-----------------------\n");
 		while( finder != NULL )
 		{
 			if ( !strcmp(finder->rank_name, str) )
 			{
 				check = 1;
-				printw("%-18s", finder->rank_name );
-				printw("%c ",'|');
+				printw("%s", finder->rank_name );
+				printw("\t\t| ");
 				printw("%d\n", finder->rank_score);
 			}
 			finder = finder -> link;
@@ -681,7 +679,10 @@ void rank(){
 			DeleteNode(num);
 			printw("result: the rank deleted\n");
 		}
-		else printw("search failure: the rank not in the list\n");
+		else
+		{
+			printw("search failure: the rank not in the list\n");
+		}
 	}
 	getch();
 
@@ -709,17 +710,18 @@ void writeRankFile(){
 			for(i=1; i< score_number + 1; i++)
 				PrintNode(i,0,fp);
 			fclose(fp);
-		}
 		
+			for ( i= 1; i < score_number+1 ; i++) {
+				DeleteNode(1);
+			}		
+		}
 	}
-	for ( i= 1; i < score_number+1 ; i++) DeleteNode(1);
 }
 
 void newRank(int score){
 	// 목적: GameOver시 호출되어 사용자 이름을 입력받고 score와 함께 리스트의 적절한 위치에 저장
 	char str[NAMELEN+1];
 	int i, j;
-	modified = 1;
 	clear();
 	//1. 사용자 이름을 입력받음
 	echo();

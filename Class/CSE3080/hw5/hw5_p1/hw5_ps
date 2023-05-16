@@ -1,0 +1,33 @@
+
+struct node {
+    data
+    node pointer link
+}
+
+function main:
+get the number of input n
+
+for i from 0 to n
+    get temporary value
+    insert temporary value at linked list
+
+print value at linked list
+
+
+function insert:
+
+declare node pointer finder
+assign head of linked list at finder
+
+if temporary value <= value of finder
+    insert temporary value in front of finder
+else 
+    while temporary value > value of link of finder and link of finder != end of list
+        move finder through linked list
+
+    if link of finder is end of list and temporary value <= value of link of finder
+        insert temporary value behind finder
+
+    else
+        insert temporary value in front of finder
+    

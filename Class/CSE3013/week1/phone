@@ -1,0 +1,43 @@
+if [ $# -eq 0 ]
+
+then 
+	echo "Usage: phone searchfor [...searchfor]"
+	echo "(You didn't tell me what you want to search for.)"
+	
+else 
+
+echo "출력 (or 형식)"
+	word_fixed=""
+	for i in $*
+	
+	do 
+		if [ -z $word_fixed ] # -z 는 없으면 -n은 있으면 
+		then
+			word_fixed+="($i"
+			
+		else 
+			word_fixed+="|$i"
+		fi
+	done
+	word_fixed+=")"
+		
+	egrep "$word_fixed" mydata | awk -f display.awk
+
+echo "출력 (and 형식)"
+	time=0
+	for i in $*
+	do
+		if [ $time -eq 0 ]
+	
+		then
+			egrep "$i" mydata > temp1
+			time=1
+		else 
+			egrep "$i" temp1 > temp2 || echo "No results"
+			cat temp2 > temp1
+			rm temp2
+		fi
+	done
+	cat temp1 | awk -f display.awk 
+fi
+exit 0	

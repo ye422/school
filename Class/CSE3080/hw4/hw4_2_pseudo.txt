@@ -1,0 +1,159 @@
+
+typedef enum {lparen, rparen, plus, minus, times, divide, mod, eos, operand, negative } precedence
+
+const int MAX_LEN = 21
+
+main()
+{
+    int top = 0
+    precedence stack[MAX_LEN]
+	int stack_2[MAX_LEN]
+    char expression[MAX_LEN]
+    get expression as input
+    postfix(expression, top, postfix_expr)
+	print result of postfix and eval
+
+}
+
+precedence getToken(symbol, expr ,n, op_check)
+{
+	symbol = expr[n++];
+	switch symbol   {
+		case '(' : return lparen;
+		case ')' : return rparen;
+		case '+' : return plus;
+		case '-' : 
+				if(operand or rparen in front of -) return minus;
+				else return negative;
+		case '/' : return divide;
+		case '*' : return times;
+		case '%' : return mod;
+		case '\0' : return eos;
+		case '#' : return negative;
+		default : return  operand;  
+	 }
+}
+
+void postfix(expr, top, post_expr)
+{
+	char symbol
+	int count = 0, n = 0
+	precedence token
+	int op_check = 0
+    int isp[9] = {0, 19, 12, 12, 13, 13, 13, 0, 15}
+	int icp[9] = {20, 19, 12, 12, 13, 13, 13, 0, 15}
+
+	stack[0] = eos;
+	( token = getToken(symbol, expr ,n, op_check) from top to bottom of stack )
+    {
+		if (token == operand)	
+			post_expr[count++] = symbol;
+		else if (token == rparen)  
+        {
+			while (stack[top] != lparen)
+				post_expr[count++] = pop token from top and convert to char
+			pop(top)
+		}
+        else 
+        {
+		   	while (isp[stack[top]] >= icp[token])
+			 	post_expr[count++] = pop token from top and convert to char
+			push(token, top)
+			op_check = 0
+		}
+	}
+	while ( token at top of = eos)
+		post_expr[count++] = TokenToChar(token)
+    return
+  }
+
+void push(item , top)
+{
+    if(top < MAX_LEN - 1)
+        stack[++top] = item
+
+    else     
+        print "Full"
+    return
+}
+
+precedence pop( top )
+{
+    precedence result
+    if(top > -1)
+    {
+        result = stack[top]
+        top--
+    }
+    else result = eos
+    return result
+}
+
+char TokenToChar(precedence token)
+{
+    char result
+    switch token
+    {
+		case plus : result = '+'
+		case minus : result = '-'
+		case divide : result = '/'
+		case times : result ='*'
+		case mod : result = '%'
+		case negative : result = '#'
+		case eos : result ='\0'
+    }
+    return result
+}
+
+int eval( post_expr,  top)
+{
+	precedence token
+	char symbol
+	int op1, op2, set_op = 1
+	top = -1
+	int n = 0
+	token = getToken(symbol, post_expr ,n, set_op)
+	while (token != eos)	  
+	{
+		if (token == operand)
+			push(symbol as int , top)
+		else    {
+			op2 = pop(top)
+			op1 = pop(top)
+			switch token   {
+				case plus : push(op1+op2, top)
+				case minus : push(op1-op2, top)	
+				case times : push(op1*op2, top)	
+				case divide: push(op1/op2, top)	
+				case mod : push(p1%op2, top) 
+				case negative :
+					push(op1, top)
+					push(op2 * (-1), top)
+			}
+		}
+		token = getToken(symbol,post_expr ,n, set_op)
+	}
+	return pop(top)
+}
+
+void push(  item ,top)
+{
+    if(top < MAX_LEN - 1)
+        stack[++top] = item;
+
+    else     
+        print full
+    return;
+}
+
+int pop(top )
+{
+    int result
+    if(top > -1)
+    {
+        result = stack[top]
+        top--
+    }
+    else result = 0
+    return result
+}

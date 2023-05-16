@@ -7,10 +7,7 @@ target = main
 $(target) : $(objects)
 	$(cc) $(cflags) -o $(target) $(objects)
 
-%.o : %.c
-	$(cc) $(cflags) -c -o $@ $<	
-
-$(objects) : $(header) 
+$(objects) : $(header)
 
 .PHONY : clean
 clean :

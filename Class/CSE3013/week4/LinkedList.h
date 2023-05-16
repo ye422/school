@@ -16,7 +16,7 @@ class Node{
 
 		Node(T element){
 		  data = element;
-		  link = 0;
+		  link = nullptr;
 		}
 	};
 
@@ -49,7 +49,6 @@ class LinkedList{
 		void Print();
 };
 
-
 //새 노드를 맨 앞에 붙이고 값을 넣음
 template <class T>
 void LinkedList<T>::Insert(T element){
@@ -67,7 +66,7 @@ void LinkedList<T>::Insert(T element){
 template <class T>
 bool LinkedList<T>::Delete(T &element){
 
-	if (first == 0)
+	if (first == nullptr)
 		return false;
 	
 	Node<T> *current = first;
@@ -75,9 +74,10 @@ bool LinkedList<T>::Delete(T &element){
 	
 	//마지막 노드까지 찾아가는 반복문
 	while(1){
-		if (current->link == 0){  //마지막 노드를 찾는것
-			if (previous)
-				previous -> link = current -> link;
+		if( current -> link == 0)
+		{
+			if( previous)
+				previous->link = current -> link;
 			else
 				first = first -> link;
 			break;
@@ -99,7 +99,7 @@ void LinkedList<T>::Print(){
 	int index = 1;
 
 	if (current_size != 0){
-		for( i = first; i != NULL; i=i->link){
+		for( i = first; i != 0; i=i->link){
 			if (index == current_size){
 				cout << "[" << index << "|";
 				cout << i -> data << "]";
@@ -113,8 +113,5 @@ void LinkedList<T>::Print(){
 		}
 		cout << endl;
 	}
-
 }
-
-
 #endif
