@@ -664,7 +664,7 @@ void rank(){
 			finder = finder -> link;
 		}
 		if (!check)
-			printw("no name in the list\n");
+			printw("search failure: no name in the list\n");
 
 	}
 
