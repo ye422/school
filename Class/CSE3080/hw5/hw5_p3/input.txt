@@ -1,0 +1,17 @@
+P Sam
+P Liza
+P Mark
+P Amy
+P Billy
+F Liza Amy
+F Liza Mark
+F Amy Sam
+F Sam Billy
+L Amy
+L Sam
+U Liza Amy
+L Amy
+Q Liza Mark
+Q Liza Billy
+Q Billy Sam
+X
