@@ -24,6 +24,7 @@
 // menu number
 #define MENU_PLAY '1'
 #define MENU_RANK '2'
+#define MENU_REC '3'
 #define MENU_EXIT '4'
 
 // 사용자 이름의 길이
@@ -34,17 +35,14 @@
 typedef struct _RecNode{
 	int lv,score;
 	int curblock, rblockX, rblockY, rblockRot; 
+	int weightedscore;
 	char (*f)[WIDTH];
 	struct _RecNode **c;
 } RecNode;
 RecNode * root = NULL;
-int cases[NUM_OF_SHAPE] = {17, 34, 34, 9, 17, 17 };
-int rot_cases[NUM_OF_SHAPE] = {2, 4, 4, 1, 2, 2};
 
-int recX;
-int recY;
-int recRot;
-int recBlock;
+
+int scorearr[CHILDREN_MAX];
 
 /* [blockShapeID][# of rotate][][]*/
 const char block[NUM_OF_SHAPE][NUM_OF_ROTATE][BLOCK_HEIGHT][BLOCK_WIDTH] ={
@@ -160,6 +158,7 @@ int recommendX = 0; // 추천 블럭 배치 정보. 차례대로 회전, Y 좌�
 RecNode *recRoot;
 int score_number = 0;
 int modified = 0;
+int autoplay_flag = 0;
 typedef struct _RankNode {
 	
 	struct _RankNode* link;
@@ -375,13 +374,18 @@ void newRank(int score);
  *	return	: (int) 추천 블럭 배치를 따를 때 얻어지는 예상 스코어
  ***********************************************************/
 int recommend(RecNode * root);
-
+int modified_recommend(RecNode * root);
 /***********************************************************
  *	추천 기능에 따라 블럭을 배치하여 진행하는 게임을 시작한다.
  *	input	: none
  *	return	: none
  ***********************************************************/
 void DrawRecommend(int y, int x, int blockID,int blockRotate);
-
 void recommendedPlay();
+
+void recommendBlockDown(int sig);
+void swap(int* a, int* b);
+void quicksort(int arr[], int low, int high);
+int partition(int arr[], int low, int high);
+int evaluateField(char (*f)[WIDTH]);
 #endif
