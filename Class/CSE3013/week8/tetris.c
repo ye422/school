@@ -16,7 +16,7 @@ int main(){
 		switch(menu()){
 		case MENU_PLAY: play(); break;
 		case MENU_RANK: rank(); break;
-		case MENU_REC: recommendedPlay(); break;
+		case MENU_REC: recommendPlay = 1; recommendedPlay(); break;
 		case MENU_EXIT: exit=1; break;
 		default: break;
 		}
@@ -33,20 +33,22 @@ void InitTetris(){
 	for(j=0;j<HEIGHT;j++)
 		for(i=0;i<WIDTH;i++)
 			field[j][i]=0;
-
-	nextBlock[0]=rand()%7;
-	nextBlock[1]=rand()%7;
-	nextBlock[2]=rand()%7;
+	for(i=0; i<VISIBLE_BLOCK;i++)
+		nextBlock[i]=rand()%7;
 	blockRotate=0;
 	blockY=-1;
 	blockX=WIDTH/2-2;
 	score=0;	
 	gameOver=0;
 	timed_out=0;	
-	recommend(root);
+	modified_recommend(root);
 	DrawOutline();
 	DrawField();
-	DrawBlockWithFeatures(blockY,blockX,nextBlock[0],blockRotate, tile);
+	if ( recommendPlay = 1) {
+		DrawBlock(blockY, blockX, nextBlock[0], blockRotate, ' ');
+		DrawRecommend(blockY,blockX, nextBlock[0],blockRotate);
+	}
+	else DrawBlockWithFeatures(blockY,blockX,nextBlock[0],blockRotate, tile);
 	DrawNextBlock(nextBlock);
 	PrintScore(score);
 }
@@ -841,15 +843,16 @@ int recommend(RecNode *root){
 
 int modified_recommend(RecNode * root) {
 	int max = 0;
-	int current_5th = 0; 
-	int i, j, r, h, w, temp_score, temp_y;
+	
+	int i, j, r, h, w, temp_score, temp_y=0;
 	int k,m;
 	int start_x, end_x;
-	int rec_flag = 0, blockX, blockY, blockR;
-	int test_num = 10;
+	int rec_flag = 0, blockX, blockY, blockR=0;
+	
 	if (root == NULL) {
 		root = (RecNode *)malloc(sizeof(RecNode));
 		root->score = 0;
+		root->weightedscore = 0;
 		root->lv = -1;
 		root->f = (char (*)[WIDTH])malloc(sizeof(char) * HEIGHT * WIDTH);
 		for(j=0;j< HEIGHT;j++)
@@ -897,11 +900,20 @@ int modified_recommend(RecNode * root) {
 			while(CheckToMove(root->f, nextBlock[lv], r, temp_y, i)) temp_y++;
 			temp_y--;
 			
+
+			root->c[j]->weightedscore = root->weightedscore; 
+			
+			int addscore = AddBlockToField(root->c[j]->f, nextBlock[lv], r, temp_y, i);
+			int deletescore = DeleteLine(root->c[j]->f);
+			root->c[j]->score += addscore;
+			root->c[j]->weightedscore += addscore; 
+			root->c[j]->score += deletescore;
+			root->c[j]->weightedscore += 100 * deletescore;
+			root->c[j]->weightedscore += evaluateField(root->c[j]->f); 
 			root->c[j]->score = root->score;
-		   	root->c[j]->score += AddBlockToField(root->c[j]->f, nextBlock[lv], r, temp_y, i);
-			root->c[j]->score += DeleteLine(root->c[j]->f);
-			root->c[j]->weightedscore = root->c[j]->score;  
-			root->c[j]->weightedscore += evaluateField(root->c[j]->f);
+		   	
+			
+			
 			scorearr[j] = root->c[j]->weightedscore;
 	 		root->c[j]->rblockRot = r;
 			root->c[j]->rblockX = i;
@@ -911,19 +923,29 @@ int modified_recommend(RecNode * root) {
 	}
 
 	int cnt = j;
-	
-	int idx[test_num];
+	k = 0;
+	int idx[TEST_NUM] = {0,};
 	quicksort(scorearr, 0, cnt - 1);
-	for(k=0; k<test_num; k++)
+	for(k=0; k<TEST_NUM;k++)
 	{
-		for(m=0;m<cnt;m++)
+		m = 0;
+		while( m < cnt)
 		{
-			if( scorearr[k] == root->c[m]->weightedscore) 
-				idx[k] = m;
+			if( scorearr[k] == root->c[m]->weightedscore) 		
+			{	
+				if ( k > 0 ) {
+					if (idx[k-1] == m ) m++;
+					else idx[k] = m;
+				}
+				else {
+					idx[k] = m;
+				}
+			}
+			m++;
 		}	
 	}
-		//temp_score = modified_recommend(root->c[idx[k]]);
-	for(k=0; k<test_num;k++) 	
+
+	for(k=0; k<TEST_NUM;k++) 	
 	{	if(lv < VISIBLE_BLOCK - 1)
 			temp_score = modified_recommend(root->c[idx[k]]);
 
@@ -937,16 +959,13 @@ int modified_recommend(RecNode * root) {
 			blockR = root->c[idx[k]]->rblockRot;
 			max = temp_score;
 		}
-		else if (max == temp_score && temp_y > blockY)
+		else if (max == temp_score && root->c[idx[k]]->rblockY > blockY)
 		{
 			rec_flag = 1;
 			blockX = root->c[idx[k]]->rblockX;
 			blockY = root->c[idx[k]]->rblockY;
 			blockR = root->c[idx[k]]->rblockRot;
 		}
-			
-		//free(root->c[idx[k]]->f);
-		//free(root->c[idx[k]]);	
 	}
 
 	if(!lv && rec_flag) {
@@ -954,7 +973,8 @@ int modified_recommend(RecNode * root) {
 		recommendR = blockR;
 		recommendX = blockX;
 		recommendY = blockY;
-		free(root);
+		datasize = evalSize(root);
+		//free(root);
 		root = NULL;
 	}
 	
@@ -971,88 +991,68 @@ void recommendedPlay(){
 
 	double end;
 	int command;
+	
 	do{
-		
-		/*move(20, WIDTH + 10);
-		printw("Time");
-		DrawBox(21, WIDTH + 10, 1, 8);
-
-		move(24, WIDTH + 10);
-		printw("Score | Time");
-		DrawBox(25, WIDTH + 10, 1, 8);
-		move(22, WIDTH + 10);
+		//datasize = evalSize(root);
 		end = ((double)(clock() - start) / CLOCKS_PER_SEC);
-		printw("%7.3lf", end);
-		move(26, WIDTH + 10);
-		printw("%7.0lf", (double)score / end); */
-		
 		if(timed_out==0){
 			alarm(1);
 			timed_out=1;
 		}
-		
 		command = wgetch(stdscr);
 		switch(command){
 			case 'q':
 				command = QUIT;
+				gameOver = 1;
 				break;
 			case 'Q':
 				command = QUIT;
+				gameOver = 1;
 				break;
 			default:
 				command = NOTHING;
 				break;
 		}
 
-		if(ProcessCommand(command) == QUIT){
-			alarm(0);
-			DrawBox(HEIGHT / 2 - 1, WIDTH / 2 - 5, 1, 10);
-			move(HEIGHT / 2, WIDTH / 2 - 4);
-			printw("Good-bye!!");
-			refresh();
-			getch();
-			return;
-		}
 	}while(!gameOver);
 
 	alarm(0);
 	DrawBox(HEIGHT / 2 - 1, WIDTH / 2 - 5, 1, 10);
 	move(HEIGHT / 2, WIDTH / 2 - 4);
 	printw("Good-bye!!");
-	refresh();
 	getch();
-	getch();
+	exit_rec(end,datasize);
+	recommendPlay = 0;
 }
 
 void recommendBlockDown(int sig){
+	int i;
 	blockX = recommendX;
 	blockY = recommendY;
 	blockRotate = recommendR;
-	if( CheckToMove(field, nextBlock[0], blockRotate, blockY + 1, blockX ) )
+	
+	if( recommendY < -1)
+		gameOver = TRUE;
+	else
 	{
-		blockY++;
-		DrawChange(field, KEY_DOWN, nextBlock[0], blockRotate, blockY, blockX);
+		score += AddBlockToField(field, nextBlock[0], blockRotate, blockY, blockX);
+		score += DeleteLine(field);
+
+		for (i=0; i<VISIBLE_BLOCK-1; i++)
+			nextBlock[i] = nextBlock[i+1];
+		nextBlock[VISIBLE_BLOCK-1] = rand()%7;
+		
+		modified_recommend(root);
+		blockY = -1;
+		blockX = WIDTH/2-2;
+		blockRotate = 0;
+		
+		DrawNextBlock(nextBlock);
+		PrintScore(score);
 	}
-	else 
-	{
-		if( recommendY == -1)
-			gameOver = TRUE;
-		else
-		{
-			score += AddBlockToField(field, nextBlock[0], blockRotate, blockY, blockX);
-			score += DeleteLine(field);
-			nextBlock[0] = nextBlock[1];
-			nextBlock[1] = nextBlock[2];
-			nextBlock[2] = rand()%7;
-			modified_recommend(root);
-			blockY = -1;
-			blockX = WIDTH/2-2;
-			blockRotate = 0;
-			DrawNextBlock(nextBlock);
-			PrintScore(score);
-		}
-		DrawField();
-	}
+	DrawField();
+	DrawBlock(blockY, blockX, nextBlock[0], blockRotate, ' ');
+	DrawRecommend(blockY,blockX, nextBlock[0],blockRotate);
 	timed_out = 0;
 }
 
@@ -1076,39 +1076,80 @@ int partition(int arr[], int low, int high) {
     return (i + 1);
 }
 
-// Quicksort function
+
 void quicksort(int arr[], int low, int high) {
     if (low < high) {
-        // Partition the array
+   
         int pivotIndex = partition(arr, low, high);
-
-        // Recursively sort the sub-arrays
         quicksort(arr, low, pivotIndex - 1);
         quicksort(arr, pivotIndex + 1, high);
     }
 }
 
 int evaluateField(char (*field)[WIDTH] ) {
-	int h,w;
+	int h,w,i,j;
 	int wscore = 0;
 	int blockcount = 0;
-	int hole = 0;
-	int wall = 0;
+	int wall = 0;	
+	int check_flag;
+	int deleted_line = 0;
+	int baseline = 0;
+	int blank = 0;
+	int top = 0;
 	for (h=HEIGHT - 1 ;h >= 0; h--) {
-		blockcount = 0;
 		for(w=0; w<WIDTH;w++)
 		{
 			if ( field[h][w] == 1) 
 				blockcount++;	
-			wscore += blockcount * h * h;
-			if ( h > HEIGHT/2 - 1) {
-				if (!field[h][w]) hole++;
-			}
-			if ( field[h][w] == 1 && (w == 0 ||w == WIDTH-1 ))
+			
+			if ( field[h][w] == 1 && ( w == 0 || w == WIDTH -1 ))
 				wall++;
-			wscore += wall * 5;	
+		
+			if ( field[h][w] == 1 && h > HEIGHT - 2)
+				baseline++;
+			else if ( field[h][w] == 1 && (h < HEIGHT - 2 && h > HEIGHT/2 ) )
+				blockcount++;
+			else if ( field[h][w] == 1 && h < 5 )
+				top++;
+			if ( w > 0 && w < HEIGHT )
+			{	
+				if ( field[h][w] == 1 && field[h][w+1] == 0 && field[h][w-1]) {
+					blank++;
+				}
+			}
 		}	
 	}
-	wscore -= hole * 20;
+	wscore -= blank * 10;
+	wscore -= top * 10;
+	wscore += blockcount;
+	wscore += baseline * 10;
+	wscore += wall * 2;
 	return wscore;
+}
+
+long evalSize(RecNode* head) {
+	int i, result = 0;
+	
+	if (head == NULL) return 0;
+	if ( head ->c == NULL) return sizeof(RecNode) + sizeof(int)*7 + sizeof(char (*)[WIDTH]);
+	if (head->lv == VISIBLE_BLOCK - 2)
+		return sizeof(RecNode) + sizeof(int)*7 + sizeof(char (*)[WIDTH]) + sizeof(RecNode**);
+	else  {
+		for (i=0; i<CHILDREN_MAX; i++) 
+			result += evalSize(head->c[i]);
+	}
+	return result + sizeof(RecNode) + sizeof(int)*7 + sizeof(char (*)[WIDTH]) + sizeof(RecNode**);
+	
+}
+
+void exit_rec(double end, long datasize) {
+	clear();
+	printw("Time\n");
+	printw("%7.3lf\n", end);
+	//DrawBox(21, WIDTH + 10, 1, 8);
+	printw("Score | Time\n");
+	printw("%7.0lf\n", (double)score / end); 
+	printw("Data | Time\n");
+	printw("%3.0ld\n",  (long)(datasize / end));	
+	getch();
 }

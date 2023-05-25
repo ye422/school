@@ -1,7 +1,6 @@
 #ifndef _TETRIS_H_
 #define _TETRIS_H_
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -17,8 +16,8 @@
 #define NUM_OF_ROTATE	4
 #define BLOCK_HEIGHT	4
 #define BLOCK_WIDTH	4
-#define BLOCK_NUM	3
-
+#define BLOCK_NUM	5
+#define TEST_NUM 5
 #define _XOPEN_SOURCE 200
 
 // menu number
@@ -29,7 +28,7 @@
 
 // 사용자 이름의 길이
 #define NAMELEN 16
-#define VISIBLE_BLOCK 3
+#define VISIBLE_BLOCK 5
 #define CHILDREN_MAX 36
 
 typedef struct _RecNode{
@@ -147,7 +146,7 @@ const char block[NUM_OF_SHAPE][NUM_OF_ROTATE][BLOCK_HEIGHT][BLOCK_WIDTH] ={
 };
 
 char field[HEIGHT][WIDTH];	/* 테트리스의 메인 게임 화면 */
-int nextBlock[BLOCK_NUM];	/* 현재 블럭의 ID와 다음 블럭의 ID들을 저장; [0]: 현재 블럭; [1]: 다음 블럭 */
+int nextBlock[VISIBLE_BLOCK];	/* 현재 블럭의 ID와 다음 블럭의 ID들을 저장; [0]: 현재 블럭; [1]: 다음 블럭 */
 int blockRotate,blockY,blockX;	/* 현재 블럭의 회전, 블럭의 Y 좌표, 블럭의 X 좌표*/
 int score;			/* 점수가 저장*/
 int gameOver=0;			/* 게임이 종료되면 1로 setting된다.*/
@@ -158,7 +157,8 @@ int recommendX = 0; // 추천 블럭 배치 정보. 차례대로 회전, Y 좌�
 RecNode *recRoot;
 int score_number = 0;
 int modified = 0;
-int autoplay_flag = 0;
+long datasize = 0;
+int recommendPlay = 0;
 typedef struct _RankNode {
 	
 	struct _RankNode* link;
@@ -388,4 +388,6 @@ void swap(int* a, int* b);
 void quicksort(int arr[], int low, int high);
 int partition(int arr[], int low, int high);
 int evaluateField(char (*f)[WIDTH]);
+long evalSize(RecNode* head);
+void exit_rec(double end,long datasize);
 #endif
