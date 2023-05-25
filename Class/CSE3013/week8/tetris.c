@@ -41,7 +41,9 @@ void InitTetris(){
 	score=0;	
 	gameOver=0;
 	timed_out=0;	
-	modified_recommend(root);
+	if (recommendPlay) modified_recommend(root);
+	else recommend(root);
+	
 	DrawOutline();
 	DrawField();
 	if ( recommendPlay = 1) {
@@ -190,19 +192,18 @@ void DrawBlock(int y, int x, int blockID,int blockRotate,char tile){
 			}
 		}
 
-	move(HEIGHT,WIDTH+10);
+	move(HEIGHT + 4,WIDTH+14);
 }
 
 void DrawBlockWithFeatures(int y, int x, int blockID, int blockRotate, char tile)
 {
 	char shadow_tile = '/';
-	
 	if ( tile == '.')
 		shadow_tile = '.';
 	DrawShadow(y, x, blockID, blockRotate, shadow_tile);
-	DrawBlock(y, x, blockID, blockRotate, tile);
 	if (tile != '.')
 		DrawRecommend(y,x, blockID,blockRotate);
+	DrawBlock(y, x, blockID, blockRotate, tile);	
 }
 
 void DrawBox(int y,int x, int height, int width){
@@ -328,7 +329,7 @@ void DrawChange(char f[HEIGHT][WIDTH],int command,int currentBlock,int blockRota
 	
 	DrawBlockWithFeatures(prev_Y, prev_X, nextBlock[0], prev_rotate, '.');
 	DrawBlockWithFeatures(blockY, blockX, nextBlock[0], blockRotate, ' ');
-	move(HEIGHT + 3, WIDTH + 3);
+	move(HEIGHT + 5, WIDTH + 5);
 }
 
 void BlockDown(int sig){
@@ -767,9 +768,7 @@ int recommend(RecNode *root){
 	int lv = root->lv + 1;
 
 	root->c = (RecNode**)malloc(sizeof(RecNode*)*CHILDREN_MAX);
-
 	j = 0;
-
 	for(r = 0; r < NUM_OF_ROTATE ;r++) {
 
 		start_x = 3;
@@ -823,7 +822,7 @@ int recommend(RecNode *root){
 				blockR = r;
 				max = temp_score;
 			}
-			//free(root->c[j]->f);
+			free(root->c[j]->f);
 			free(root->c[j]);
 			j++;
 		}

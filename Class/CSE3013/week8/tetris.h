@@ -16,10 +16,10 @@
 #define NUM_OF_ROTATE	4
 #define BLOCK_HEIGHT	4
 #define BLOCK_WIDTH	4
-#define BLOCK_NUM	5
+#define BLOCK_NUM 3
 #define TEST_NUM 5
 #define _XOPEN_SOURCE 200
-
+#define VISIBLE_BLOCK 3
 // menu number
 #define MENU_PLAY '1'
 #define MENU_RANK '2'
@@ -28,7 +28,7 @@
 
 // 사용자 이름의 길이
 #define NAMELEN 16
-#define VISIBLE_BLOCK 5
+
 #define CHILDREN_MAX 36
 
 typedef struct _RecNode{
