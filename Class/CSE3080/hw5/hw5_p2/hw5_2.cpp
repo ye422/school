@@ -3,7 +3,6 @@
 
 using std::cout;
 using std::cin;
-const int MAZE_MAX = 30;
 
 struct offsets {
     int vert;
@@ -50,8 +49,14 @@ int main()
 
     for(int i=0; i < row; i++)
         for(int j=0; j < col; j++)
+        {
             infile >> maze[i][j];
-    
+            if(infile.fail())
+            {    
+                std::cerr << "Invaild input!\n";
+                exit(5);
+            }
+        }    
 
     setmark(mark,row,col);
     path(maze, mark, EXIT_ROW, EXIT_COL);
@@ -143,7 +148,6 @@ element pop()
 
     else 
     {
-        cout << "Empty stack\n";
         result.dir = 0;
         result.col = 0;
         result.row = 0;

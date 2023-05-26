@@ -1,0 +1,113 @@
+
+
+struct offsets {
+    int vert;
+    int horiz; 
+};
+
+struct element{
+    int row;
+    int col;
+    int dir;
+    element * prev;
+    element * next;
+};
+
+
+offsets move[8] = { {-1,0}, {-1,1}, {0,1}, {1,1}, {1,0}, {1,-1}, {0,-1}, {-1,-1} };
+
+int main()
+{
+    row=10, col=10
+    EXIT_ROW = 8
+    EXIT_COL = 8
+    open input.txt
+
+    allocate maze
+    read input and assign at maze
+    
+    setmark()
+    path()
+    delete nodes
+    close input.txt
+    return 
+}
+
+void setmark(mark,row,col)
+{
+    set all mark to 0
+    return
+}
+
+void path(maze,mark, row,col )
+{
+    bool found = false
+	element position, initial
+	mark[1][1] = 1
+	set initial element 
+    push(initial)
+	while head != nullptr and found is false
+    {
+		position = pop()
+		assign row, col, dir
+		while dir < 8 and found is false 
+        {
+			update nextRow and nextCol with offset move
+			if nextRow is EXIT_ROW and nextCol is EXIT_COL
+				set found to true
+			else if  !maze[nextRow][nextCol] && !mark [nextRow][nextCol]  	
+			    mark mark[nextRow][nextCol] as 1
+			    update position
+                update direction
+			    push(position)
+			    update row to nextRow, col to nextCol, dir to 0
+			else update direction
+        }
+	}
+    printResult(row,col, found)
+        
+}
+
+void push(element& item)
+{
+    
+    create newelement
+    assign value of item at newelement
+    if stack is empty    
+        put newelement as head 
+    
+    else
+        put newelement next to tail 
+}
+
+element pop()
+{
+    if  tail != null pointer   
+        assign value of tail at result
+
+    else 
+        return empty result
+
+    if there is single node 
+        empty stack
+
+    else 
+        move tail to previous node 
+    detele node at tail
+    return result
+}
+
+void printResult(frow, fcol, found)
+{
+    EXIT_ROW = 8
+    EXIT_COL = 8
+    open path.txt
+
+    if found {
+	    move through linked list from head to tail
+            put value of each node
+	    put final row and final col
+	    put EXIT_ROW and EXIT_COL 
+    }
+	else  put "cant find path"
+}

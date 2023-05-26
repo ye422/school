@@ -1,0 +1,84 @@
+#include <iostream>
+#include <cstring>
+using std::cout;
+using std::cin;
+
+#define MAX_SIZE 24
+#define IS_FULL(ptr) (!(ptr))
+
+const int NAMELEN = 20;
+
+typedef struct node *node_pointer;
+struct node {
+		node_pointer link;
+		char name[NAMELEN];
+};
+
+bool out[MAX_SIZE];
+node *head[MAX_SIZE] = {nullptr,};
+
+void push(int idx, char name[NAMELEN]);
+void name(int idx, char name[NAMELEN]);
+node pop(int idx);
+
+int main()
+{
+	
+	
+	node * x; 
+	node * y;
+	node * top;
+	int  i, j, n;
+
+	cout << "Enter the size ( <= 24): ";
+	cin >> n;
+	for (i = 0; i < n; i++)  {
+	/*  initialize head and out  */
+		out[i] = true;	      
+		head[i] = nullptr;
+	}
+	
+	/*  Phase 1: Input the equivalence pairs :  */
+	printf("Enter a pair of numbers (-1 -1 to quit): ");
+	cin >> i >> j;
+	while (i >=0)   {
+		x = new node;
+		if (IS_FULL(x))   {
+			fprintf(stderr, "The memory is full\n");
+			exit(1);
+  		}
+		x->data = j;  x->link = head[i];  head[i] = x;
+		x = new node;
+		if (IS_FULL(x))   {
+			fprintf(stderr, "The memory is full\n");
+			exit(1);
+	 	}
+		x->data = i;  x->link = head[j];  head[j] = x;
+		printf("Enter a pair of numbers (-1 -1 to quit): ");
+		cin >> i >> j;
+	}
+/* Phase 2 : output the equivalence classes  */
+	for (i = 0; i < n; i++)  {
+		if  (out[i])  {
+			cout << "New Class : " << i << ' ';
+			out[i] = false;   /*   set class to false  */
+			x = head[i];  
+			top =  nullptr;  /*  initialize stack  */
+		   	for ( ; ; )   {    /*  find rest of class  */
+				while (x)   {	/*  process list  */
+			 		j = x->data;
+			  	  	if  (out[j])  {
+						cout << j << " ";   
+						out[j] = false;
+						y = x->link;  x->link = top;  top = x;  x = y;
+			  		}
+		  		 	else  x = x->link;
+				}
+				if (!top)   break;
+				x = head[top->data];  
+				top = top->link;   /* unstack */
+		    }
+			cout << "\n";
+		}
+	}
+}

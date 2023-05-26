@@ -1,0 +1,159 @@
+
+
+typedef struct node *node_pointer;
+struct node {
+		node_pointer link;
+		char name[NAMELEN];
+
+};
+
+bool array out[MAX_SIZE];
+node pointer array head[MAX_SIZE]
+
+main()
+{
+	open input.txt
+	while exit_flag is false {
+		read input.txt as input
+		switch(input) {
+			case 'P' :
+				name(input)
+
+			case 'F' :
+				read 2 names
+				find if name is stored
+
+				if both names found
+                    friendnode(name1,name2)
+                    friendnode(name2,name1)
+
+			case 'L' :
+				read name
+				find if name is stored
+				if found 
+				    printnode(name)
+				
+			case 'U' :
+				read 2 names
+                find if names are stored
+                if both names found
+                    deleteNode(name1,name2)
+                    deleteNode(name2,name1)
+					
+			case 'Q' :
+				read 2 names
+				find if both names are stored
+				if both names found {
+					if (findNode(stk1, tempchar2) and findNode(stk2, tempchar1) )
+						fprintf(outfile, "Yes\n")
+					else fprintf(outfile, "No\n")
+				} 
+
+			case 'X' :
+			case 'x':
+				set exit_flag to true
+		}
+	}
+    delete all node
+}
+
+ name( idx, temp_name)
+{
+	declare newnode
+	set newnode->name as temp_name
+	if head[idx] is null pointer
+        set newnode as head[idx]
+	else return
+}
+
+ friendnode( idx,  temp_name)
+{
+	declare newnode
+	set newnode->name as temp_name
+	 
+	if head[idx] is null pointer 
+		exit(2);
+	
+	else 
+		put newnode next node of head[idx]
+	
+}
+
+ printnode( idx)
+{
+	set out array to false
+	declare node pointer finder
+	declare node pointer current as head[idx]
+	if current is null pointer
+		return
+	else 
+		move to next node
+	
+	while current is not null pointer {
+
+		find index of current->name
+
+		if push(idx) is false  {  
+			return
+
+		move to next node
+	}
+
+	while  stack is not empty 
+	{
+		assign pop() at temp
+		if out[temp] is false and temp > -1  {
+			put head[temp]->name at output.txt
+			set out[temp] as true
+		}
+	}
+}
+
+ deleteNode( idx, name)
+{
+	assign head[idx] at node pointer prev
+    assign head[idx]->link at node pointer current
+	while current and prev is not null pointer
+	{	
+		
+		if current->name equals to name
+			delete current node
+		
+		move to next node
+	}
+}
+
+ findNode(idx, name)
+{
+	assign head[idx] at node pointer current
+	bool result = false
+	while current is not null pointer
+	{
+		if current->name equals to name
+			result = true
+		move to next node
+	}
+	return result
+}
+
+ push( item)
+{
+	if stack_top equals MAX_SIZE
+		return false
+	else {
+		stack_top++
+		assign item at stack[stack_top]
+		return true
+	}
+}
+
+ pop(){
+	result = -1
+	if stack_top equals -1
+		return result
+	else {
+		assign stack[stack_top] at result 
+		stack_top--
+		return result
+	}
+}

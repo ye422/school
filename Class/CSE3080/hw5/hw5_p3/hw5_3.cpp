@@ -62,7 +62,6 @@ int main()
 			case 'P' :
 				infile >> tempchar1;
 				name(stack_num, tempchar1);
-				stack_num++;
 				break;
 
 			case 'F' :
@@ -166,6 +165,10 @@ int main()
 void name(int idx, char temp_name[NAMELEN])
 {
 	node * newnode = new node;
+	for(int i=0; i<stack_num; i++)
+		if( !strcmp(head[i]->name,temp_name) )
+			return;
+	stack_num++;
 	strncpy(newnode ->name, temp_name, NAMELEN);
 	if (head[idx] == nullptr)
 	{
@@ -291,5 +294,17 @@ int pop(){
 		result = stack[stack_top]; 
 		stack_top--;
 		return result;
+	}
+}
+
+void clearnode(int idx)
+{
+	node * current = head[idx];
+	node * prev;
+	while(current != nullptr)
+	{
+		prev = current;
+		current = current->link;
+		delete prev;
 	}
 }

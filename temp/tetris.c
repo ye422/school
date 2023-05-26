@@ -16,7 +16,6 @@ int main(){
 		switch(menu()){
 		case MENU_PLAY: play(); break;
 		case MENU_RANK: rank(); break;
-		case MENU_REC: recommendPlay = 1; recommendedPlay(); break;
 		case MENU_EXIT: exit=1; break;
 		default: break;
 		}
@@ -33,24 +32,20 @@ void InitTetris(){
 	for(j=0;j<HEIGHT;j++)
 		for(i=0;i<WIDTH;i++)
 			field[j][i]=0;
-	for(i=0; i<VISIBLE_BLOCK;i++)
-		nextBlock[i]=rand()%7;
+
+	nextBlock[0]=rand()%7;
+	nextBlock[1]=rand()%7;
+	nextBlock[2]=rand()%7;
 	blockRotate=0;
 	blockY=-1;
 	blockX=WIDTH/2-2;
 	score=0;	
 	gameOver=0;
-	timed_out=0;	
-	if (recommendPlay) modified_recommend(root);
-	else recommend(root);
-	
+	timed_out=0;
+
 	DrawOutline();
 	DrawField();
-	if ( recommendPlay = 1) {
-		DrawBlock(blockY, blockX, nextBlock[0], blockRotate, ' ');
-		DrawRecommend(blockY,blockX, nextBlock[0],blockRotate);
-	}
-	else DrawBlockWithFeatures(blockY,blockX,nextBlock[0],blockRotate, tile);
+	DrawBlockWithFeatures(blockY,blockX,nextBlock[0],blockRotate, tile);
 	DrawNextBlock(nextBlock);
 	PrintScore(score);
 }
@@ -192,7 +187,7 @@ void DrawBlock(int y, int x, int blockID,int blockRotate,char tile){
 			}
 		}
 
-	move(HEIGHT + 4,WIDTH+14);
+	move(HEIGHT,WIDTH+10);
 }
 
 void DrawBlockWithFeatures(int y, int x, int blockID, int blockRotate, char tile)
@@ -201,9 +196,8 @@ void DrawBlockWithFeatures(int y, int x, int blockID, int blockRotate, char tile
 	if ( tile == '.')
 		shadow_tile = '.';
 	DrawShadow(y, x, blockID, blockRotate, shadow_tile);
-	if (tile != '.')
-		DrawRecommend(y,x, blockID,blockRotate);
-	DrawBlock(y, x, blockID, blockRotate, tile);	
+	DrawBlock(y, x, blockID, blockRotate, tile);
+
 }
 
 void DrawBox(int y,int x, int height, int width){
@@ -228,15 +222,11 @@ void DrawBox(int y,int x, int height, int width){
 
 void play(){
 	int command;
-	double end;
-	time_t start = clock();
-	
 	clear();
 	act.sa_handler = BlockDown;
 	sigaction(SIGALRM,&act,&oact);
 	InitTetris();
 	do{
-		end = ((double)(clock() - start) / CLOCKS_PER_SEC);
 		if(timed_out==0){
 			alarm(1);
 			timed_out=1;
@@ -251,9 +241,7 @@ void play(){
 			printw("Good-bye!!");
 			refresh();
 			getch();
-			//newRank(score);
-			clear();
-			exit_rec(end,datasize);
+			newRank(score);
 			return;
 		}
 	} while (!gameOver);
@@ -265,9 +253,7 @@ void play(){
 	printw("GameOver!!");
 	refresh();
 	getch();
-	//newRank(score);
-	clear();
-	exit_rec(end,datasize);
+	newRank(score);
 }
 
 char menu(){
@@ -337,39 +323,38 @@ void DrawChange(char f[HEIGHT][WIDTH],int command,int currentBlock,int blockRota
 	
 	DrawBlockWithFeatures(prev_Y, prev_X, nextBlock[0], prev_rotate, '.');
 	DrawBlockWithFeatures(blockY, blockX, nextBlock[0], blockRotate, ' ');
-	move(HEIGHT + 5, WIDTH + 5);
+	move(HEIGHT + 3, WIDTH + 3);
 }
 
 void BlockDown(int sig){
 	// user code
 	//강의자료 p26-27의 플로우차트를 참고한다.
-		if( CheckToMove(field, nextBlock[0], blockRotate, blockY + 1, blockX ) )
-		{
-			blockY++;
-			DrawChange(field, KEY_DOWN, nextBlock[0], blockRotate, blockY, blockX);
-		}
-		else 
-		{
-			if( blockY == -1)
-				gameOver = TRUE;
-			else
-			{
-				score += AddBlockToField(field, nextBlock[0], blockRotate, blockY, blockX);
-				score += DeleteLine(field);
-				nextBlock[0] = nextBlock[1];
-				nextBlock[1] = nextBlock[2];
-				nextBlock[2] = rand()%7;
-				recommend(root);
-				blockY = -1;
-				blockX = WIDTH/2-2;
-				blockRotate = 0;
-				DrawNextBlock(nextBlock);
-				PrintScore(score);
-			}
-			DrawField();
-		}
-		timed_out = 0;
 	
+	if( CheckToMove(field, nextBlock[0], blockRotate, blockY + 1, blockX ) )
+	{
+		blockY++;
+		DrawChange(field, KEY_DOWN, nextBlock[0], blockRotate, blockY, blockX);
+	}
+	else 
+	{
+		if( blockY == -1)
+			gameOver = TRUE;
+		else
+		{
+			score += AddBlockToField(field, nextBlock[0], blockRotate, blockY, blockX);
+			score += DeleteLine(field);
+			nextBlock[0] = nextBlock[1];
+			nextBlock[1] = nextBlock[2];
+			nextBlock[2] = rand()%7;
+			blockY = -1;
+			blockX = WIDTH/2-2;
+			blockRotate = 0;
+			DrawNextBlock(nextBlock);
+			PrintScore(score);
+		}
+		DrawField();
+	}
+	timed_out = 0;
 }
 
 int AddBlockToField(char f[HEIGHT][WIDTH],int currentBlock,int blockRotate, int blockY, int blockX){
@@ -419,7 +404,7 @@ int DeleteLine(char f[HEIGHT][WIDTH]){
 					f[k][l] = f[k - 1][l];
 					
 			for( m =0; m< WIDTH;m++)
-				f[0][m] = 0;
+				f[0][l] = 0;
 		} 	
 	}
 	return deleted_line * deleted_line * 100;
@@ -429,8 +414,7 @@ int DeleteLine(char f[HEIGHT][WIDTH]){
 
 void DrawShadow(int y, int x, int blockID, int blockRotate, char tile)
 {
-	int shadow_y = 0;
-	shadow_y = y;
+	int shadow_y = y;
 	int drop_flag = 0;
 	int draw_flag = 0; 
 	int i,j;
@@ -490,7 +474,7 @@ void createRankList(){
 	fclose(fp);
 }
 
-void CreateNode(int temp_score, char temp_char[NAMELEN])
+void CreateNode(int temp_score, char temp_char[NAMELEN+1])
 {
 	
 	RankNode* newnode = (RankNode*)malloc(sizeof(RankNode));
@@ -558,7 +542,7 @@ void DeleteNode(int rank)
 				error_flag = 1;
 		}
 		if ( error_flag )
-			printw("Can'root->c Delete Rank; Invaild Rank");
+			printw("Can't Delete Rank; Invaild Rank");
 		else
 		{
 			prev_node->link = current_node->link;
@@ -611,7 +595,7 @@ void PrintNode(int rank, int mod, FILE* output)
 void rank(){
 	//목적: rank 메뉴를 출력하고 점수 순으로 X부터~Y까지 출력함
 	//1. 문자열 초기화
-	int blockX=1, blockY=score_number;
+	int X=1, Y=score_number;
 	char ch;
 	char tempx, tempy;
 	int i, j;
@@ -620,36 +604,36 @@ void rank(){
 	//2. printw()로 3개의 메뉴출력	
 	printw("1. list rank from X to Y\n");
 	printw("2. list ranks by specific name\n");
-	printw("3. delete specific rank\n");
+	printw("3. delete a specific rank\n");
 
 	//3. wgetch()를 사용하여 변수 ch에 입력받은 메뉴번호 저장
 	ch = wgetch(stdscr);
 	//4. 각 메뉴에 따라 입력받을 값을 변수에 저장
-	//4-1. 메뉴1: blockX, Y를 입력받고 적절한 input인지 확인 후(blockX<=blockY), X와 Y사이의 rank 출력
+	//4-1. 메뉴1: X, Y를 입력받고 적절한 input인지 확인 후(X<=Y), X와 Y사이의 rank 출력
 	if (ch == '1') 
 	{
 		echo();
 		printw("X: ");
-		scanw("%d",&blockX);
+		scanw("%d",&X);
 		printw("Y: ");
-		scanw("%d",&blockY);
+		scanw("%d",&Y);
 		noecho();
 
-		if ( blockX <= 0 || blockY <= 0) {
+		if ( X <= 0 || Y <= 0) {
 			printw("Search failure : no rank\n");
 			return;
 		}
 
-		else if ( blockX > score_number || blockY > score_number) {
+		else if ( X > score_number || Y > score_number) {
 			printw("Search failure : no rank\n");
 			return;
 		}
 
-		if ( blockX <= blockY )
+		if ( X <= Y )
 		{
 			printw("%11s%8c%8s\n","name",'|',"score");
 			printw("------------------------------\n");
-			for(i = blockX; i < blockY + 1;i++)
+			for(i = X; i < Y + 1;i++)
 				PrintNode(i,1,NULL);
 		}
 		else 
@@ -658,6 +642,7 @@ void rank(){
 
 	//4-2. 메뉴2: 문자열을 받아 저장된 이름과 비교하고 이름에 해당하는 리스트를 출력
 	else if ( ch == '2') {
+		/*
 		char str[NAMELEN+1];
 		int check = 0;
 		RankNode * finder = Head;
@@ -680,14 +665,14 @@ void rank(){
 			finder = finder -> link;
 		}
 		if (!check)
-			printw("search failure: no name in the list\n");
+			printw("no name in the list\n");*/
 
 	}
 
 	//4-3. 메뉴3: rank번호를 입력받아 리스트에서 삭제
 	else if ( ch == '3') 
 	{
-		int num;
+		/*int num;
 		printw("Input the rank: ");
 		echo();
 		scanw("%d",&num);
@@ -697,7 +682,7 @@ void rank(){
 			DeleteNode(num);
 			printw("result: the rank deleted\n");
 		}
-		else printw("search failure: the rank not in the list\n");
+		else printw("search failure: the rank not in the list\n");*/
 	}
 	getch();
 
@@ -752,412 +737,12 @@ void newRank(int score){
 
 void DrawRecommend(int y, int x, int blockID,int blockRotate){
 	// user code
-	//if(CheckToMove(field, nextBlock[0], recommendR, recommendY, recommendX)) 
-	DrawBlock(recommendY, recommendX, nextBlock[0], recommendR, 'R');
 }
 
+int recommend(char fieldOri[HEIGHT][WIDTH],int lv){
 
-int recommend(RecNode *root){
-	int max = 0; 
-	int i, j = 0, r, h, w, temp_score, temp_y;
-	int start_x, end_x;
-	int rec_flag = 0, blockX, blockY, blockR;
-	
-	if (root == NULL) {
-		root = (RecNode *)malloc(sizeof(RecNode));
-		root->score = 0;
-		root->lv = -1;
-		root->f = (char (*)[WIDTH])malloc(sizeof(char) * HEIGHT * WIDTH);
-		for(j=0;j< HEIGHT;j++)
-			for(i=0;i<WIDTH;i++)
-				root->f[j][i] = field[j][i];
-	}
-
-	int lv = root->lv + 1;
-
-	root->c = (RecNode**)malloc(sizeof(RecNode*)*CHILDREN_MAX);
-	j = 0;
-	for(r = 0; r < NUM_OF_ROTATE ;r++) {
-
-		start_x = 3;
-		for(h = 0;h < 4;h++){
-			for(w = 0;w < 4;w++) {
-				if(block[nextBlock[lv]][r][h][w])
-					break;
-			}
-			if(w < start_x)
-				start_x = w;
-		}
-		start_x = 0 - start_x;
-
-		end_x = 0;
-		for(h = 0;h < 4;h++) {
-			for(w = 3;w >= 0;w--) {
-				if(block[nextBlock[lv]][r][h][w])
-					break;
-			}
-			if(w > end_x)
-				end_x = w;
-		}
-		end_x = WIDTH - end_x - 1;
-		
-		for(i = start_x;i < end_x + 1;i++) {
-			root->c[j] = (RecNode*)malloc(sizeof(RecNode));
-			root->c[j]->f = (char (*)[WIDTH])malloc(sizeof(char) * HEIGHT * WIDTH);
-			for(h = 0;h < HEIGHT;h++){
-				for(w = 0;w < WIDTH;w++)
-					root->c[j]->f[h][w] = root->f[h][w];
-			}
-			root->c[j]->lv = lv;
-			temp_y = -1; 
-			
-			while(CheckToMove(root->c[j]->f, nextBlock[lv], r, temp_y, i)) temp_y++;
-			temp_y--;
-			
-			root->c[j]->score = root->score;
-		   	root->c[j]->score += AddBlockToField(root->c[j]->f, nextBlock[lv], r, temp_y, i);
-			root->c[j]->score += DeleteLine(root->c[j]->f);
-			
-			if(lv < VISIBLE_BLOCK - 1)
-				temp_score = recommend(root->c[j]);
-			else temp_score = root->c[j]->score;
-
-			if(max < temp_score )
-			{
-				rec_flag = 1;
-				blockX = i;
-				blockY = temp_y;
-				blockR = r;
-				max = temp_score;
-			}
-			//free(root->c[j]->f);
-			//free(root->c[j]);
-			j++;
-		}
-	}
-	
-	if(!lv && rec_flag) {
-
-		recommendR = blockR;
-		recommendX = blockX;
-		recommendY = blockY;
-		datasize = evalSize(root);
-		//free(root);
-		root = NULL;
-	}
-	
-	return max;
 }
-
-int modified_recommend(RecNode * root) {
-	int max = 0;
-	
-	int i, j, r, h, w, temp_score, temp_y=0;
-	int k,m;
-	int start_x, end_x;
-	int rec_flag = 0, blockX, blockY, blockR=0;
-	
-	if (root == NULL) {
-		root = (RecNode *)malloc(sizeof(RecNode));
-		root->score = 0;
-		root->weightedscore = 0;
-		root->lv = -1;
-		root->f = (char (*)[WIDTH])malloc(sizeof(char) * HEIGHT * WIDTH);
-		for(j=0;j< HEIGHT;j++)
-			for(i=0;i<WIDTH;i++)
-				root->f[j][i] = field[j][i];
-	}
-
-	int lv = root->lv + 1;
-
-	root->c = (RecNode**)malloc(sizeof(RecNode*)*CHILDREN_MAX);
-	j=0;
-	for(r = 0; r < NUM_OF_ROTATE ;r++) {
-
-		start_x = 3;
-		for(h = 0;h < 4;h++){
-			for(w = 0;w < 4;w++) {
-				if(block[nextBlock[lv]][r][h][w])
-					break;
-			}
-			if(w < start_x)
-				start_x = w;
-		}
-		start_x = 0 - start_x;
-
-		end_x = 0;
-		for(h = 0;h < 4;h++) {
-			for(w = 3;w >= 0;w--) {
-				if(block[nextBlock[lv]][r][h][w])
-					break;
-			}
-			if(w > end_x)
-				end_x = w;
-		}
-		end_x = WIDTH - end_x - 1;
-		
-		for(i = start_x; i < end_x + 1; i++) {
-			root->c[j] = (RecNode*)malloc(sizeof(RecNode));
-			root->c[j]->f = (char (*)[WIDTH])malloc(sizeof(char) * HEIGHT * WIDTH);
-			for(h = 0;h < HEIGHT;h++){
-				for(w = 0;w < WIDTH;w++)
-					root->c[j]->f[h][w] = root->f[h][w];
-			}
-			root->c[j]->lv = lv;
-			temp_y = -1; 
-			while(CheckToMove(root->f, nextBlock[lv], r, temp_y, i)) temp_y++;
-			temp_y--;
-			
-
-			root->c[j]->weightedscore = root->weightedscore; 
-			
-			int addscore = AddBlockToField(root->c[j]->f, nextBlock[lv], r, temp_y, i);
-			int deletescore = DeleteLine(root->c[j]->f);
-			root->c[j]->score += addscore;
-			root->c[j]->weightedscore += addscore; 
-			root->c[j]->score += deletescore;
-			root->c[j]->weightedscore += 100 * deletescore;
-			root->c[j]->weightedscore += evaluateField(root->c[j]->f); 
-			root->c[j]->score = root->score;
-		   	
-			
-			
-			scorearr[j] = root->c[j]->weightedscore;
-	 		root->c[j]->rblockRot = r;
-			root->c[j]->rblockX = i;
-			root->c[j]->rblockY = temp_y;
-			j++;
-		}
-	}
-
-	int cnt = j;
-	k = 0;
-	int idx[TEST_NUM] = {0,};
-	quicksort(scorearr, 0, cnt - 1);
-	for(k=0; k<TEST_NUM;k++)
-	{
-		m = 0;
-		while( m < cnt)
-		{
-			if( scorearr[k] == root->c[m]->weightedscore) 		
-			{	
-				if ( k > 0 ) {
-					if (idx[k-1] == m ) m++;
-					else idx[k] = m;
-				}
-				else {
-					idx[k] = m;
-				}
-			}
-			m++;
-		}	
-	}
-
-	for(k=0; k<TEST_NUM;k++) 	
-	{	if(lv < VISIBLE_BLOCK - 1)
-			temp_score = modified_recommend(root->c[idx[k]]);
-
-		else temp_score = root->c[idx[k]]->weightedscore;
-
-		if(max < temp_score )
-		{
-			rec_flag = 1;
-			blockX = root->c[idx[k]]->rblockX;
-			blockY = root->c[idx[k]]->rblockY;
-			blockR = root->c[idx[k]]->rblockRot;
-			max = temp_score;
-		}
-		else if (max == temp_score && root->c[idx[k]]->rblockY > blockY)
-		{
-			rec_flag = 1;
-			blockX = root->c[idx[k]]->rblockX;
-			blockY = root->c[idx[k]]->rblockY;
-			blockR = root->c[idx[k]]->rblockRot;
-		}
-	}
-
-	if(!lv && rec_flag) {
-
-		recommendR = blockR;
-		recommendX = blockX;
-		recommendY = blockY;
-		datasize = evalSize(root);
-		//free(root);
-		root = NULL;
-	}
-	
-	return max;
-}
-
 
 void recommendedPlay(){
-	clear();
-	time_t start = clock();
-	act.sa_handler = recommendBlockDown;
-	sigaction(SIGALRM, &act, &oact);
-	InitTetris();
-
-	double end;
-	int command;
-	
-	do{
-		//datasize = evalSize(root);
-		end = ((double)(clock() - start) / CLOCKS_PER_SEC);
-		if(timed_out==0){
-			alarm(1);
-			timed_out=1;
-		}
-		command = wgetch(stdscr);
-		switch(command){
-			case 'q':
-				command = QUIT;
-				gameOver = 1;
-				break;
-			case 'Q':
-				command = QUIT;
-				gameOver = 1;
-				break;
-			default:
-				command = NOTHING;
-				break;
-		}
-
-	}while(!gameOver);
-
-	alarm(0);
-	DrawBox(HEIGHT / 2 - 1, WIDTH / 2 - 5, 1, 10);
-	move(HEIGHT / 2, WIDTH / 2 - 4);
-	printw("Good-bye!!");
-	getch();
-	exit_rec(end,datasize);
-	recommendPlay = 0;
-}
-
-void recommendBlockDown(int sig){
-	int i;
-	blockX = recommendX;
-	blockY = recommendY;
-	blockRotate = recommendR;
-	
-	if( recommendY < -1)
-		gameOver = TRUE;
-	else
-	{
-		score += AddBlockToField(field, nextBlock[0], blockRotate, blockY, blockX);
-		score += DeleteLine(field);
-
-		for (i=0; i<VISIBLE_BLOCK-1; i++)
-			nextBlock[i] = nextBlock[i+1];
-		nextBlock[VISIBLE_BLOCK-1] = rand()%7;
-		
-		modified_recommend(root);
-		blockY = -1;
-		blockX = WIDTH/2-2;
-		blockRotate = 0;
-		
-		DrawNextBlock(nextBlock);
-		PrintScore(score);
-	}
-	DrawField();
-	DrawBlock(blockY, blockX, nextBlock[0], blockRotate, ' ');
-	DrawRecommend(blockY,blockX, nextBlock[0],blockRotate);
-	timed_out = 0;
-}
-
-void swap(int* a, int* b) {
-    int temp = *a;
-    *a = *b;
-    *b = temp;
-}
-
-int partition(int arr[], int low, int high) {
-    int pivot = arr[high];
-    int i = low - 1;
-
-    for (int j = low; j <= high - 1; j++) {
-        if (arr[j] >= pivot) {  
-            i++;
-            swap(&arr[i], &arr[j]);
-        }
-    }
-    swap(&arr[i + 1], &arr[high]);
-    return (i + 1);
-}
-
-
-void quicksort(int arr[], int low, int high) {
-    if (low < high) {
-   
-        int pivotIndex = partition(arr, low, high);
-        quicksort(arr, low, pivotIndex - 1);
-        quicksort(arr, pivotIndex + 1, high);
-    }
-}
-
-int evaluateField(char (*field)[WIDTH] ) {
-	int h,w,i,j;
-	int wscore = 0;
-	int blockcount = 0;
-	int wall = 0;	
-	int check_flag;
-	int deleted_line = 0;
-	int baseline = 0;
-	int blank = 0;
-	int top = 0;
-	for (h=HEIGHT - 1 ;h >= 0; h--) {
-		for(w=0; w<WIDTH;w++)
-		{
-			if ( field[h][w] == 1) 
-				blockcount++;	
-			
-			if ( field[h][w] == 1 && ( w == 0 || w == WIDTH -1 ))
-				wall++;
-		
-			if ( field[h][w] == 1 && h > HEIGHT - 2)
-				baseline++;
-			else if ( field[h][w] == 1 && (h < HEIGHT - 2 && h > HEIGHT/2 ) )
-				blockcount++;
-			else if ( field[h][w] == 1 && h < 5 )
-				top++;
-			if ( w > 0 && w < HEIGHT )
-			{	
-				if ( field[h][w] == 1 && field[h][w+1] == 0 && field[h][w-1]) {
-					blank++;
-				}
-			}
-		}	
-	}
-	wscore -= blank * 10;
-	wscore -= top * 10;
-	wscore += blockcount;
-	wscore += baseline * 10;
-	wscore += wall * 2;
-	return wscore;
-}
-
-long evalSize(RecNode* head) {
-	int i, result = 0;
-	
-	if (head == NULL) return 0;
-	if ( head ->c == NULL) return sizeof(RecNode) + sizeof(int)*7 + sizeof(char (*)[WIDTH]);
-	if (head->lv == VISIBLE_BLOCK - 2)
-		return sizeof(RecNode) + sizeof(int)*7 + sizeof(char (*)[WIDTH]) + sizeof(RecNode**);
-	else  {
-		for (i=0; i<CHILDREN_MAX; i++) 
-			result += evalSize(head->c[i]);
-	}
-	return result + sizeof(RecNode) + sizeof(int)*7 + sizeof(char (*)[WIDTH]) + sizeof(RecNode**);
-	
-}
-
-void exit_rec(double end, long datasize) {
-	clear();
-	printw("Time\n");
-	printw("%7.3lf\n", end);
-	//DrawBox(21, WIDTH + 10, 1, 8);
-	printw("Score | Time\n");
-	printw("%7.0lf\n", (double)score / end); 
-	printw("Score | Data\n");
-	printw("%.5lf\n",   score / (double) datasize);	
-	getch();
+	// user code
 }

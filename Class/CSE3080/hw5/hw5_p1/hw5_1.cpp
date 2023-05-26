@@ -3,6 +3,8 @@
 using std::cin;
 using std::cout;
 
+const int MAX_SIZE = 100;
+
 // Node structure for the linked list
 struct Node {
     int value;
@@ -83,6 +85,11 @@ int main() {
     }
     // Insert nodes into the linked list
     infile >> n;
+    if(n > MAX_SIZE) 
+    {    
+        exit(3);
+        std::cerr << "Too many numbers\n";
+    }
     int * temp_arr = new int[n];
     for(int i=0; i < n; i++)
     {   
@@ -92,5 +99,6 @@ int main() {
     
     printList();
     infile.close();
+    deleteList();
     return 0;
 }
