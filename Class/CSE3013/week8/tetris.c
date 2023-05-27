@@ -1107,8 +1107,6 @@ int evaluateField(char (*field)[WIDTH] ) {
 	for (h=HEIGHT - 1 ;h >= 0; h--) {
 		for(w=0; w<WIDTH;w++)
 		{
-			if ( field[h][w] == 1) 
-				blockcount++;	
 			
 			if ( field[h][w] == 1 && ( w == 0 || w == WIDTH -1 ))
 				wall++;
@@ -1119,12 +1117,23 @@ int evaluateField(char (*field)[WIDTH] ) {
 				blockcount++;
 			else if ( field[h][w] == 1 && h < 5 )
 				top++;
-			if ( w > 0 && w < HEIGHT )
+			if ( w > 0 && w < WIDTH )
 			{	
-				if ( field[h][w] == 1 && field[h][w+1] == 0 && field[h][w-1]) {
+				if ( field[h][w] == 0 && field[h][w+1] == 1 && field[h][w-1] == 1 && field[h-1][w] == 1) {
 					blank++;
 				}
+				
 			}
+			else if (w == 0) {
+				
+				if (field[h][w] == 0 && field[h][w+1] == 1 && field[h+1][w] == 1 )
+					blank++;
+			}
+			else if (w==WIDTH - 1) {
+				if(field[h][w] == 0 && field[h][w-1] == 1 && field[h+1][w] == 1)
+					blank++;
+			}
+			
 		}	
 	}
 	wscore -= blank * 10;
@@ -1154,7 +1163,8 @@ void exit_rec(double end, long datasize) {
 	clear();
 	printw("Time\n");
 	printw("%7.3lf\n", end);
-	//DrawBox(21, WIDTH + 10, 1, 8);
+	printw("Data\n");
+	printw("%7ld\n", datasize);
 	printw("Score | Time\n");
 	printw("%7.0lf\n", (double)score / end); 
 	printw("Score | Data\n");
