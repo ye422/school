@@ -13,7 +13,7 @@ void makeMaze (int &n, int &m);
 void printMaze(int &n, int &m);
 void vertical(int &n, int &m);
 void horizontal(int &n, int &m);
-void merge(int &n, int &m);
+void merge(int &n, int m);
 void printcurrent(int & walls);
 int min(int a, int b);
 
@@ -56,10 +56,17 @@ void makeMaze(int &n, int &m) {
 
     for(int i=0; i<m; i++) {     
         horizontal(n,i);
+        
         if ( i != 0) merge(n,i);
-        if ( i != m-1 ) vertical(n,i);   
-    }
+        
+        if ( i != m-1 ) {
+            vertical(n,i);
+            merge(n,i+1);
+            
+        }  
 
+    }
+    merge(n,m);
     /*for (int i=0; i<walls_v ; i++) {
         for (int j=0; j<walls_h;j++ ) {
             if (maze[i][j] > 1) maze[i][j] = 1;
@@ -85,7 +92,7 @@ void printMaze(int &n, int &m) {
         }
         outfile << '\n'; 
     }
-        
+    outfile.close();    
 }
 
 void horizontal(int &n, int &m) {
@@ -107,7 +114,10 @@ void horizontal(int &n, int &m) {
             if (i%2 == 0) maze[height][i] = -1;
             else  {
                 if( maze[height - 1][i] == 0) 
-                    maze[height][i] = maze[height-2][i]; 
+                {    
+                    maze[height][i] = min(maze[height-2][i],maze[height][i]);
+                    maze[height-2][i] = maze[height][i];
+                } 
             }
         }
     }
@@ -120,13 +130,9 @@ void horizontal(int &n, int &m) {
                 if (rand()%2 == 1) {
                     maze[height][i+1] = 0;
                     maze[height][i+2] = min(maze[height][i], maze[height][i+2]);
-                    maze[height][i] = min(maze[height][i],maze[height][i+2]); 
+                    maze[height][i] = min(maze[height][i],maze[height][i+2]);
+					merge(n,m); 
                 }
-
-                
-            }
-            else if (maze[height][i] == maze[height][i+2] && maze[height][i+1] == -1 && height != max_height - 2 ) {
-                maze[height][i+1] = 0; 
             }
             else if( maze[height][i] != maze[height][i+2] && height == max_height - 2 ) {
                 maze[height][i+1] = 0;
@@ -145,10 +151,11 @@ void horizontal(int &n, int &m) {
 void vertical(int &n, int &m) {
     
     int i = 1;
-    int down = 0;
+    bool down = false;
+    // down 해야되면 false, 안해도 되면 true
     int walls = 2*n+1;
     int height = 2*m + 1;
-    bool double_flag = false;
+    bool double_flag = true;
     
     while (i < walls) {
         double_flag = true;
@@ -157,12 +164,12 @@ void vertical(int &n, int &m) {
                 double_flag = false;
         }    
 
-        if ( maze[height][i] != maze[height][i+2] && down == 0 && double_flag) {
+        if ( maze[height][i] != maze[height][i+2] && !down && double_flag) {
             maze[height + 1][i] = 0;
             if ( maze[height+2][i] == 0) maze[height + 2][i] = maze[height][i];
             else {
                 maze[height+2][i] = min(maze[height+2][i],maze[height][i]);
-                maze[height][i] = min(maze[height+2][i],maze[height][i]); 
+                maze[height][i] = maze[height+2][i]; 
             }
         }
         
@@ -173,14 +180,14 @@ void vertical(int &n, int &m) {
                     maze[height + 2][i] = maze[height][i];
                 else {
                     maze[height+2][i] = min(maze[height+2][i],maze[height][i]);
-                    maze[height][i] = min(maze[height+2][i],maze[height][i]);
+                    maze[height][i] = maze[height+2][i];
                 }
-                down = 1;
+                down = true;
             }
         }   
         
         if ( maze[height][i] != maze[height][i+2] ) 
-            down = 0;
+            down = false;
         i = i+2;
     }
 
@@ -202,11 +209,11 @@ int min(int a, int b) {
     else return a;
 }
 
-void merge(int &n,int &m) {
+void merge(int &n,int m) {
     int width = 2*n+1;
     int height = 2*m+1;
-    for(int i= height; i>1; i=i - 2) {
-        for(int j=1; j<width-1; j=j+2) {
+    for(int i= height-2; i>1; i=i - 2) {
+        for(int j=1; j<width; j=j+2) {
             if(maze[i-1][j] == 0 ) 
             {
                 maze[i][j] = min (maze[i][j], maze[i-2][j]);
@@ -216,15 +223,35 @@ void merge(int &n,int &m) {
                 maze[i][j+2] = min(maze[i][j], maze[i][j+2]);
                 maze[i][j] = maze[i][j+2];
             }
+            else if ( !maze[i-1][j] && !maze[i][j+1] ) {
+                maze[i-2][j] = min ( maze[i-2][j], maze[i][j+2]);
+                maze[i][j+2] = maze[i-2][j];
+                maze[i][j] = maze[i-2][j];
+            }
+        }
+    
+        for(int j=width-2; j > 1; j=j-2) {
+            if(maze[i-1][j] == 0 ) 
+            {
+                maze[i][j] = min (maze[i][j], maze[i-2][j]);
+                maze[i-2][j] = maze[i][j];
+            }
+            else if (maze[i][j-1] == 0) {
+                maze[i][j-2] = min(maze[i][j], maze[i][j-2]);
+                maze[i][j] = maze[i][j-2];
+            }
+            else if ( !maze[i-1][j] && !maze[i][j-1] ) {
+                maze[i-2][j] = min ( maze[i-2][j], maze[i][j-2]);
+                maze[i][j-2] = maze[i-2][j];
+                maze[i][j] = maze[i-2][j];
+            }
+        }
+    }
+    for(int j=width; j > 1; j=j-2) {
+        if (maze[1][j-1] == 0) {
+                maze[1][j-2] = min(maze[1][j], maze[1][j-2]);
+                maze[1][j] = maze[1][j-2];
         }
     }
 }
 
-/*void printcurrent(int &walls) {
-    for (int i=0; i<max_height ; i++) {
-        for (int j=0; j<walls;j++ ) 
-            cout << setw(2) << right << maze[i][j] << ' ';
-        cout << '\n';
-    }
-    cout << '\n'; 
-}*/

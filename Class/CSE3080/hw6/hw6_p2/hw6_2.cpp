@@ -20,7 +20,7 @@ bool push(int dir);
 int pop();
 node * insertNode(node* root, int item);
 bool findNode(node *& root, int item);
-int deleteNode(node *&root);
+int deleteNode( node *&top, node *& root);
 void sort(node *&top);
 void cleannode(node *& top);
 
@@ -57,7 +57,7 @@ int main() {
 
         else if (input == 'q') exit_flag = false; 
         else if (input == 'd') {
-            deleted = deleteNode(top);
+            deleted = deleteNode(top, root);
             if (deleted == -1) {
                 cout << "Heap Empty.\n";
                 newtop = true;
@@ -154,7 +154,7 @@ bool findNode(node *&top, int item) {
     return result;
 }
 
-int deleteNode(node *& top) {
+int deleteNode(node *& top, node *& root) {
     
     int result, mv, tempval, last_mv;
     if ( top == nullptr ) return -1;
@@ -189,7 +189,7 @@ int deleteNode(node *& top) {
             
         }
         deleter = temp2;
-        
+        root = temp2->parent;
         tempval = deleter -> key;
         deleter -> key = top -> key;
         top -> key = tempval;
@@ -227,7 +227,7 @@ void sort(node *& root) {
 
     int temp;
     if (root == nullptr) return;
-    else if ( root->leftChild != nullptr && root -> rightChild != nullptr ) {
+    if ( root->leftChild != nullptr && root -> rightChild != nullptr ) {
         sort(root->leftChild);
         sort(root->rightChild);
     }
@@ -239,13 +239,16 @@ void sort(node *& root) {
     }
     else if (root -> rightChild == nullptr && root -> leftChild == nullptr) {
         if (root -> parent == nullptr) return;
+        
     }
+
     if (root -> parent != nullptr ) {
 
         if ( root -> parent -> key < root -> key) {
             temp = root -> key;
             root -> key = root -> parent ->key;
             root -> parent -> key = temp;
+            sort(root);
         }
 
         if(root -> n % 2 == 1 && root -> parent -> leftChild != nullptr) {
@@ -254,6 +257,8 @@ void sort(node *& root) {
                 temp = root -> key;
                 root -> key = root ->parent->leftChild->key;
                 root ->parent->leftChild->key = temp;
+                sort(root);
+                sort(root->parent -> leftChild);
             }
         }
         else if (root -> n % 2 == 0 && root -> parent -> rightChild != nullptr) {
@@ -262,13 +267,9 @@ void sort(node *& root) {
                 temp = root -> key;
                 root-> key = root ->parent->rightChild->key;
                 root->parent->rightChild->key = temp;
+                sort(root);
+                sort(root->parent->rightChild);
             }
-        }
-
-        if ( root -> parent -> key < root -> key) {
-            temp = root -> key;
-            root -> key = root -> parent ->key;
-            root -> parent -> key = temp;
         }
     }
     return;

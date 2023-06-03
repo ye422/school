@@ -8,18 +8,19 @@
 #include <signal.h>
 #include <string.h>
 
-#define WIDTH	10
-#define HEIGHT	22
+#define WIDTH 10
+#define HEIGHT 22
 #define NOTHING	0
-#define QUIT	'q'
-#define NUM_OF_SHAPE	7
-#define NUM_OF_ROTATE	4
-#define BLOCK_HEIGHT	4
+#define QUIT 'q'
+#define NUM_OF_SHAPE 7
+#define NUM_OF_ROTATE 4
+#define BLOCK_HEIGHT 4
 #define BLOCK_WIDTH	4
 #define BLOCK_NUM 3
 #define TEST_NUM 5
 #define _XOPEN_SOURCE 200
 #define VISIBLE_BLOCK 3
+
 // menu number
 #define MENU_PLAY '1'
 #define MENU_RANK '2'
@@ -149,7 +150,7 @@ char field[HEIGHT][WIDTH];	/* 테트리스의 메인 게임 화면 */
 int nextBlock[VISIBLE_BLOCK];	/* 현재 블럭의 ID와 다음 블럭의 ID들을 저장; [0]: 현재 블럭; [1]: 다음 블럭 */
 int blockRotate,blockY,blockX;	/* 현재 블럭의 회전, 블럭의 Y 좌표, 블럭의 X 좌표*/
 int score;			/* 점수가 저장*/
-int gameOver=0;			/* 게임이 종료되면 1로 setting된다.*/
+int gameOver = 0;			/* 게임이 종료되면 1로 setting된다.*/
 int timed_out;
 int recommendR = 0;
 int recommendY = 0;

@@ -1,0 +1,80 @@
+
+Node {
+    data
+    Node pointer left
+    Node pointer right
+}
+
+// 이진 탐색 트리에 노드 삽입
+insertNode(Node pointer root, data) {
+    if root is null pointer
+        return createNode(data)
+
+    if data < root->data
+        root->left = insertNode(root->left, data)
+    else if data > root->data
+        root->right = insertNode(root->right, data)
+
+    return root
+}
+
+inorderTraversal(Node pointer root, arr, index) {
+    if root is null
+        return
+
+    inorderTraversal(root->left, arr, index)
+    arr[index] = root->data
+    index++
+    inorderTraversal(root->right, arr, index)
+}
+
+isSameBinaryTree(Node pointer root1, Node pointer root2) {
+    arr1[50]
+    arr2[50]
+    index1 = 0
+    index2 = 0
+
+    inorderTraversal(root1, arr1, index1)
+    inorderTraversal(root2, arr2, index2)
+
+    if index1 != index2 
+        return false
+
+    for i from 0 to index1 
+        if arr1[i] != arr2[i]
+            return false
+    
+    return true
+}
+
+main {
+   
+    assign null pointer to Node pointer root1
+    assign null pointer to Node pointer root2  
+   
+    open input1.txt and input2.txt
+    
+    read number of input n1, n2
+
+    if number of input n1,n2 are different
+        print no
+        exit
+    
+    else 
+        for i from 0 to n1
+            read temp value
+            insertNode(root1, temp)      
+      
+        
+        for i from 0 to n1 
+            read temp value
+            insertNode(root2,temp)
+    
+    sameTree = isSameBinaryTree(root1, root2)
+
+    if sameTree is 1 
+        print yes
+    else 
+        print no
+    close files
+}

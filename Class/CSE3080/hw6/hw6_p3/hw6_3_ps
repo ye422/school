@@ -1,0 +1,60 @@
+
+Node:
+    key
+    left
+    right
+
+
+insert(root, key):
+   
+    if root is nullptr:
+        newNode = createNode(key)
+        return newNode
+
+    if key < root->key:
+        root->left = insert(root->left, key)
+
+    else if key > root->key:
+        root->right = insert(root->right, key)
+
+    return root
+
+remove(root, key):
+  
+    if root is null:
+        return root
+
+    if key < root->key:
+        root->left = remove(root->left, key)
+    else if key > root->key:
+        root->right = remove(root->right, key)
+    else:
+
+        if root->left is nullptr:
+            temp = root->right
+            delete root
+            return temp
+        else if root->right is nullptr:
+            temp = root->left
+            delete root
+            return temp
+
+        maxNode = findMaxNode(root->left)
+        root->key = maxNode.key
+        root->left = remove(root->left, maxNode->key)
+
+    
+    return root
+
+findMaxNode(node):
+    current = node
+    while current and current->right is not null pointer:
+        current = current->right
+    return current
+
+createNode(key):
+    newNode = new Node
+    newNode->key = key
+    newNode->left = null
+    newNode->right = null
+    return newNode

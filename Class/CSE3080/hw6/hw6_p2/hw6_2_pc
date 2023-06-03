@@ -1,0 +1,175 @@
+MAX = 100
+typedef struct node* treePointer
+struct node {
+    int key
+    treePointer parent
+    treePointer leftChild, rightChild
+    int n
+}
+
+main() {
+    while exit_flag:
+        get input
+
+        if input == 'i':
+            get number n as input
+            if findNode(top, temp) is false:
+                root = insertNode(root, temp)
+                print inserted value
+                
+            else:
+                print "Exist Number"
+
+        else if input is 'q':
+            set exit_flag true 
+
+        else if input is 'd':
+            deleted = deleteNode(top)
+            if deleted is -1:
+                print "Heap Empty."
+            else
+                print deleted value
+
+    clean_up_the_node(top)
+}
+
+insertNode(root, item):
+    declare and assign node pointer newnode 
+    initialize member of newnode
+
+    if node_num is 1:
+        set root node to newnode and node_num++
+        return nextpos
+    else:
+        newnode->parent = root
+
+    if node_num is even number:
+        root->leftChild = newnode
+        nextpos = root
+    else:
+        root->rightChild = newnode
+    sort(topnode)
+    if node_num is odd number:
+        
+        current2 = newnode
+        while current2 -> n is odd number:
+            if reached top node:
+                break
+            go to upper node and mv_cnt++
+        if all upper nodes are rightChild and current2->n is 1:
+            for i from 0 to move_count:
+                move current2 to its leftChild
+        else:
+            move current2 to brother node (rightChild of parent node)
+            for i from 0 to move_count - 1:
+                move current2 to its leftChild
+    nextpos = current2 and node_num++
+    return nextpos
+
+
+
+findNode(current, item): 
+    if current is null:
+        return false
+    else if current's key is equal to item:
+        return true
+    else if current's key is less than item:
+        return false
+    else if current has a left child and current's key is greater than item and current's left child's key is less than item:
+        return false
+    else if current has a left child and current's left child's key is equal to item:
+        return true
+    else if current has a left child and a right child:
+        if current's left child's key is greater than or equal to item and current's right child's key is less than item:
+            return findNode(current's left child, item)
+        else if current's right child's key is equal to item:
+            return true
+        else:
+            return (findNode(current's left child, item) or findNode(current's right child, item))
+
+    return false
+
+deleteNode(node pointer top)
+    if top is nullptr:
+        return -1
+    
+    Initialize variables and data structures
+        
+    if only one node remains:
+        Perform the deletion and return the result
+    
+    else:
+        locate the node to be deleted:
+            Traverse the binary tree based on the path stored in a stack
+        
+        perform the deletion:
+            Swap the key value of the node to be deleted with the key value of the top node
+            Adjust the parent's child pointer to disconnect the node to be deleted
+            Decrement the total node count
+        
+        sort the binary tree:
+            Ensure the heap property is maintained by rearranging the nodes
+        
+        Delete the node that was swapped with the top node
+        
+    return the result of the deletion
+
+
+bool push(int dir) {
+    if (stack_top == 49) return false;
+    else {
+        stack_top++;
+        stack[stack_top] = dir;
+        return true;
+    }
+
+}
+
+int pop() {
+    if (stack_top == -1) return -1;
+    else {
+        int result = stack[stack_top];
+        stack_top--;
+        return result; 
+    }
+}
+
+sort(root)
+    if root is null pointer
+        return
+    
+    sort(root->leftChild)
+    sort(root->rightChild)
+    
+    if root->parent is null pointer
+        return
+    
+    set temp pointer
+    
+    if root->parent->key < root->key
+        temp = root->key
+        root->key = root->parent->key
+        root->parent->key = temp
+    
+    if root->n % 2 = 1 and root->parent->leftChild is not null and root->key > root->parent->leftChild->key
+        temp = root->key
+        root->key = root->parent->leftChild->key
+        root->parent->leftChild->key = temp
+    
+    else if root->n % 2 = 0 and root->parent->rightChild is not null and root->key < root->parent->rightChild->key
+        temp = root->key
+        root->key = root->parent->rightChild->key
+        root->parent->rightChild->key = temp
+
+
+
+clean_up_the_nodes(node pointer top)
+    if top is nullptr:
+        return
+    
+    recursively delete nodes:
+        Delete the left subtree of the current node
+        Delete the right subtree of the current node
+        Delete the current node
+    
+    return
