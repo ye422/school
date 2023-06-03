@@ -22,10 +22,7 @@ node * insertNode(node* root, int item);
 bool findNode(node *& root, int item);
 int deleteNode(node *&root);
 void sort(node *&top);
-void deletenode(node *& top);
-
-
-
+void cleannode(node *& top);
 
 
 
@@ -68,14 +65,13 @@ int main() {
             else cout << "Delete " <<deleted << '\n'; 
         }
     }
-    deletenode(top);
+    cleannode(top);
     return 0;
 }
 
 // 다음에 삽입할 root 리턴
 node* insertNode(node* root, int item) {
-    int temp,mv_cnt, mv;
-    bool move_flag = true;
+    int temp,mv_cnt;
    
     treePointer newnode = new node;
     treePointer nextpos = nullptr;
@@ -227,7 +223,6 @@ int pop() {
         return result; 
     }
 }
-
 void sort(node *& root) {
 
     int temp;
@@ -245,12 +240,14 @@ void sort(node *& root) {
     else if (root -> rightChild == nullptr && root -> leftChild == nullptr) {
         if (root -> parent == nullptr) return;
     }
-    if (root -> parent != nullptr && root -> parent -> key < root -> key) {
-        
-        temp = root -> key;
-        root -> key = root -> parent ->key;
-        root -> parent -> key = temp;
-         
+    if (root -> parent != nullptr ) {
+
+        if ( root -> parent -> key < root -> key) {
+            temp = root -> key;
+            root -> key = root -> parent ->key;
+            root -> parent -> key = temp;
+        }
+
         if(root -> n % 2 == 1 && root -> parent -> leftChild != nullptr) {
             if (root -> key > root -> parent -> leftChild -> key )
             {
@@ -267,15 +264,22 @@ void sort(node *& root) {
                 root->parent->rightChild->key = temp;
             }
         }
+
+        if ( root -> parent -> key < root -> key) {
+            temp = root -> key;
+            root -> key = root -> parent ->key;
+            root -> parent -> key = temp;
+        }
     }
     return;
 
 }
 
-void deletenode(node *& top) {
+
+void cleannode(node *& top) {
     node * current = top;
     if (current == nullptr) return;
-    if(current-> leftChild != nullptr) deletenode(current -> leftChild);
-    if (current -> rightChild != nullptr) deletenode(current -> rightChild);
+    if(current-> leftChild != nullptr) cleannode(current -> leftChild);
+    if (current -> rightChild != nullptr) cleannode(current -> rightChild);
     delete current;
 }
