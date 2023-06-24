@@ -144,6 +144,7 @@ bool findNode(node *&top, int item) {
     if (current == nullptr) result = false;
     else if (current-> key == item) result = true;
     else if (current -> key < item) result = false;
+    else if (current -> key != item && current -> leftChild == nullptr && current -> rightChild == nullptr) return false;
     else if (current -> leftChild != nullptr && current -> key  > item && current -> leftChild -> key < item) result = false;
     else if ( current ->  leftChild != nullptr && current -> leftChild -> key == item) result = true;
     else if ( current -> leftChild != nullptr && current -> rightChild != nullptr) {
@@ -239,9 +240,7 @@ void sort(node *& root) {
     }
     else if (root -> rightChild == nullptr && root -> leftChild == nullptr) {
         if (root -> parent == nullptr) return;
-        
     }
-
     if (root -> parent != nullptr ) {
 
         if ( root -> parent -> key < root -> key) {
@@ -250,7 +249,6 @@ void sort(node *& root) {
             root -> parent -> key = temp;
             sort(root);
         }
-
         if(root -> n % 2 == 1 && root -> parent -> leftChild != nullptr) {
             if (root -> key > root -> parent -> leftChild -> key )
             {
@@ -273,7 +271,6 @@ void sort(node *& root) {
         }
     }
     return;
-
 }
 
 

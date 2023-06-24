@@ -34,7 +34,7 @@ int main()
     int EXIT_ROW = 8;
     int EXIT_COL = 8;
     std::ifstream infile;
-    infile.open("input.txt");   
+    infile.open("maze.txt");   
     if (!infile) {
         std::cerr << "Error! Can't open file.\n";
         exit(1);
